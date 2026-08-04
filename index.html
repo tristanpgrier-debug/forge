@@ -149,29 +149,29 @@ const BELLS=[4,6,8,10,12,16];
    lock: null, or a skill key that must be unlocked by a coach before it appears.
    sub:  the exercise shown in its place while it is locked.                                    */
 const EX={
-  goblet:{n:"Goblet Squat",t:"bell",s:2,lo:8,hi:12,b:2,rest:75,
+  goblet:{grad:"Rear-Foot Elevated Split Squat - one leg at a time",n:"Goblet Squat",t:"bell",s:2,lo:8,hi:12,b:4,rest:75,
     cue:"Bell against your chest, elbows in. Sit down between your knees, not backwards. Chest stays proud."},
-  floorpress:{n:"Floor Press",t:"bell",s:3,lo:8,hi:12,b:1,rest:75,arm:true,
+  floorpress:{n:"Floor Press",t:"bell",s:3,lo:8,hi:12,b:2,rest:75,arm:true,
     cue:"Lie on your back, knees bent. Press straight up. Elbow stops when it touches the floor - no bouncing."},
-  press:{n:"Standing Press",t:"bell",s:3,lo:8,hi:10,b:1,rest:75,arm:true,
+  press:{n:"Standing Press",t:"bell",s:3,lo:8,hi:10,b:2,rest:75,arm:true,
     cue:"Bell in the rack on your shoulder. Squeeze your bum and abs, press up, finish with the arm by your ear."},
   pushup:{n:"Push-ups",t:"body",s:2,lo:6,hi:12,rest:60,
     cue:"Body in one straight line. Hands under your shoulders. Chest to the floor, no sagging hips."},
   hollow:{n:"Hollow Hold",t:"time",s:3,lo:20,hi:40,rest:45,
     cue:"Lower back pressed flat into the floor. If it lifts, bring your legs higher - that is not cheating."},
-  deadlift:{n:"Kettlebell Deadlift",t:"bell",s:3,lo:8,hi:12,b:4,rest:75,
+  deadlift:{grad:"Single-Leg Deadlift - same hinge, half the base, twice the demand",n:"Kettlebell Deadlift",t:"bell",s:3,lo:8,hi:12,b:4,rest:75,
     cue:"Push your hips back, keep the back flat. The bell travels straight up your shins. Stand tall at the top."},
-  row:{n:"One-Arm Row",t:"bell",s:3,lo:8,hi:12,b:2,rest:60,arm:true,
+  row:{n:"One-Arm Row",t:"bell",s:3,lo:8,hi:12,b:3,rest:60,arm:true,
     cue:"Free hand on a bench or your knee. Pull the bell to your hip, not your shoulder. Squeeze the shoulder blade."},
-  curl:{n:"Kettlebell Curl",t:"bell",s:3,lo:10,hi:15,b:1,rest:60,
+  curl:{n:"Kettlebell Curl",t:"bell",s:3,lo:10,hi:15,b:2,rest:60,
     cue:"Both hands on the handle. Elbows pinned to your sides. Slow on the way down - that is the half that counts."},
-  lunge:{n:"Reverse Lunge",t:"bell",s:2,lo:8,hi:12,b:1,rest:60,arm:true,
+  lunge:{grad:"Rear-Foot Elevated Split Squat - back foot up on a bench",n:"Reverse Lunge",t:"bell",s:2,lo:8,hi:12,b:2,rest:60,arm:true,
     cue:"Step backwards, not forwards. Back knee kisses the floor. Front shin stays vertical."},
-  carry:{n:"Suitcase Carry",t:"time",s:3,lo:30,hi:45,b:3,rest:60,arm:true,bell:true,
+  carry:{grad:"Walk further, or carry two bells at once",n:"Suitcase Carry",t:"time",s:3,lo:30,hi:45,b:5,rest:60,arm:true,bell:true,
     cue:"One bell, one side. Walk tall and do not lean. Your abs are what stop you tipping over."},
-  racked:{n:"Racked Squat",t:"bell",s:3,lo:8,hi:12,b:2,rest:75,arm:true,
+  racked:{grad:"Rear-Foot Elevated Split Squat - one leg at a time",n:"Racked Squat",t:"bell",s:3,lo:8,hi:12,b:3,rest:75,arm:true,
     cue:"Bell in the rack position on one shoulder. Same squat as the goblet, but your abs have to fight the tilt."},
-  halo:{n:"Kettlebell Halo",t:"bell",s:2,lo:8,hi:10,b:0,rest:45,
+  halo:{n:"Kettlebell Halo",t:"bell",s:2,lo:8,hi:10,b:1,rest:45,
     cue:"Bell upside down by the horns. Circle it slowly around your head. Ribs stay down, no arching."},
   plank:{n:"Plank",t:"time",s:3,lo:20,hi:45,rest:45,
     cue:"Elbows under shoulders. Squeeze your bum hard. A shaking plank done right beats a still one done lazy."},
@@ -181,13 +181,13 @@ const EX={
     cue:"Both knees down, bum squeezed. Takes the legs out of it so the shoulder does all the work."},
 
   /* --- locked skills --- */
-  swing:{n:"Two-Hand Swing",t:"bell",s:3,lo:10,hi:15,b:2,rest:90,lock:"swing",sub:"fastdl",
+  swing:{grad:"Single-Arm Swing - same weight, one hand",n:"Two-Hand Swing",t:"bell",s:3,lo:10,hi:15,b:4,rest:90,lock:"swing",sub:"fastdl",
     cue:"This is a HINGE, not a squat, and not a lift with the arms. Snap the hips, the bell floats to chest height."},
-  getup:{n:"Half Get-up",t:"bell",s:2,lo:3,hi:5,b:0,rest:75,lock:"getup",sub:"tkpress",arm:true,
+  getup:{n:"Half Get-up",t:"bell",s:2,lo:3,hi:5,b:1,rest:75,lock:"getup",sub:"tkpress",arm:true,
     cue:"Eyes on the bell the whole way. Slow. This is the one where rushing gets you hurt."},
-  clean:{n:"Kettlebell Clean",t:"bell",s:3,lo:6,hi:10,b:1,rest:75,lock:"clean",sub:"row",arm:true,
+  clean:{n:"Kettlebell Clean",t:"bell",s:3,lo:6,hi:10,b:2,rest:75,lock:"clean",sub:"row",arm:true,
     cue:"The bell should land softly in the rack. If it bangs your forearm, you are throwing it, not guiding it."},
-  fastdl:{n:"Fast Deadlift",t:"bell",s:3,lo:10,hi:15,b:3,rest:75,
+  fastdl:{grad:"Single-Leg Deadlift - same hinge, half the base, twice the demand",n:"Fast Deadlift",t:"bell",s:3,lo:10,hi:15,b:4,rest:75,
     cue:"A deadlift driven hard by the hips. This is how you learn the hinge that the swing is built on."}
 };
 
@@ -318,8 +318,11 @@ function recommend(xk){
   if(hitTop && (last.fb==="easy"||last.fb==="ok")){
     if(canUp) return {bell:BELLS[bi+1], reps:x.lo, up:true,
       why:`You owned ${x.hi} on the ${last.bell} kg. Move up to the ${BELLS[bi+1]} kg and start again at ${x.lo}.`};
-    return {bell:last.bell, reps:(last.target??x.hi)+1,
-      why:`Top bell already. Keep adding a rep - ${(last.target??x.hi)+1} this time.`};
+    const r=(last.target??x.hi)+1;
+    return {bell:last.bell, reps:r, capped:true,
+      why: x.grad
+        ? `You've run out of bell - keep adding reps, ${r} this time. Next step up: ${x.grad}.`
+        : `Top bell already. Keep adding a rep - ${r} this time.`};
   }
   const step = last.fb==="easy"?2:1;
   const r=Math.min(x.hi,(last.target??x.lo)+step);
@@ -618,6 +621,29 @@ function vCoach(A){
     He adds reps inside the range session by session. Only once he hits the top of the range on
     <i>every</i> set, and rates it Easy or Just right, does the app move him to the next bell and drop
     him back to the bottom of the range. A "Too hard" rating walks the reps back rather than the weight.
+    </div></div>`;
+
+  h+=`<div class="card"><div class="lbl">The 16 kg ceiling</div>
+    <div class="muted" style="font-size:13px;line-height:1.6">
+    At 175 cm he is tall for 13, and the starting bells have been set accordingly - the squat,
+    hinge and carry all begin near the top of your rack.<br><br>
+    That means <b>the leg and carry work will run out of weight long before the pressing does.</b>
+    Deadlifts and carries at 16 kg will stop being hard within a few weeks; the presses and curls
+    will keep progressing for a year. When an exercise caps out, the app stops asking for more
+    weight and starts telling him to add reps, and it names the harder variation to move to -
+    single-leg deadlifts, split squats, single-arm swings. Same load, more demand.<br><br>
+    The alternative is buying a 20 or 24 kg bell. Don't rush it - the variation route is better
+    skill-building at his age anyway, and it costs nothing.
+    </div></div>`;
+
+  h+=`<div class="card"><div class="lbl">Growing fast</div>
+    <div class="muted" style="font-size:13px;line-height:1.6">
+    At his height he is likely mid-growth-spurt. Two practical things, neither a reason to stop:
+    coordination often gets temporarily worse while limbs are lengthening, so a technique wobble
+    is usually growth rather than laziness. And knee or heel pain during a spurt is common and
+    worth listening to - if he mentions either, ease off jumping and deep squatting for a bit
+    and mention it to a GP. Resistance training itself is not the problem; it is one of the
+    safest things he can do.
     </div></div>`;
 
   h+=`<div class="card"><div class="lbl">What the program is doing</div>

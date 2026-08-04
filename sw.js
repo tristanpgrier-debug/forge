@@ -1,4 +1,4 @@
-const C = "forge-v1";
+const C = "forge-v2";
 const A = ["./index.html","./manifest.json"];
 self.addEventListener("install", e => { self.skipWaiting();
   e.waitUntil(caches.open(C).then(c => c.addAll(A)).catch(()=>{})); });
