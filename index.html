@@ -1,0 +1,670 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#080C16">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FORGE">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>FORGE</title>
+<style>
+:root{
+  --bg:#080C16; --card:#111827; --card2:#161F31; --line:#243044;
+  --txt:#EAF0FA; --dim:#8194B0; --faint:#5A6B85;
+  --acc:#A3E635;      /* lime */
+  --acc2:#22D3EE;     /* cyan */
+  --g:#4ADE80; --a:#FBBF24; --r:#FB7185; --p:#C084FC;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
+  overscroll-behavior-y:none}
+body{padding-bottom:calc(78px + env(safe-area-inset-bottom))}
+header{position:sticky;top:0;z-index:40;background:rgba(8,12,22,.94);
+  backdrop-filter:blur(14px);border-bottom:1px solid var(--line);
+  padding:calc(12px + env(safe-area-inset-top)) 18px 12px}
+.hrow{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
+h1{margin:0;font-size:25px;font-weight:850;letter-spacing:-.6px}
+.sub{color:var(--dim);font-size:13px;margin-top:3px}
+main{padding:16px 14px 30px;max-width:620px;margin:0 auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:13px}
+.card.tight{padding:13px 14px}
+.lbl{font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--faint);font-weight:800;margin-bottom:9px}
+.big{font-size:36px;font-weight:850;letter-spacing:-1.4px;line-height:1}
+.muted{color:var(--dim)}
+.tiny{font-size:11.5px;color:var(--faint);line-height:1.45}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.btn{width:100%;padding:16px;border-radius:15px;border:0;font-size:16px;font-weight:800;
+  background:var(--acc);color:#0A1000;cursor:pointer;font-family:inherit}
+.btn:active{transform:scale(.985)}
+.btn.sec{background:var(--card2);color:var(--txt);border:1px solid var(--line)}
+.btn.gho{background:transparent;color:var(--dim);border:1px solid var(--line)}
+.btn.cy{background:var(--acc2);color:#00212A}
+.pill{display:inline-block;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:800;
+  background:var(--card2);color:var(--dim);border:1px solid var(--line)}
+.pill.g{color:var(--g);border-color:#1C5137} .pill.a{color:var(--a);border-color:#5A4310}
+.pill.r{color:var(--r);border-color:#5E2733} .pill.n{color:var(--acc2);border-color:#0E4E5C}
+.pill.p{color:var(--p);border-color:#4A2D63}
+
+/* level bar */
+.xpwrap{height:9px;background:var(--card2);border-radius:99px;overflow:hidden;margin-top:9px;border:1px solid var(--line)}
+.xpbar{height:100%;background:linear-gradient(90deg,var(--acc2),var(--acc));border-radius:99px;transition:width .5s}
+
+/* exercise */
+.ex{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:15px;margin-bottom:12px}
+.ex.done{opacity:.5}
+.ex.locked{border-style:dashed;opacity:.85}
+.exn{font-weight:800;font-size:17px;letter-spacing:-.3px}
+.exm{color:var(--dim);font-size:12.5px;margin-top:3px}
+.bells{display:flex;gap:7px;flex-wrap:wrap;margin:13px 0 4px}
+.bell{flex:1;min-width:46px;padding:11px 4px;border-radius:12px;border:1.5px solid var(--line);
+  background:var(--card2);color:var(--dim);font-weight:800;font-size:15px;text-align:center;cursor:pointer;font-family:inherit}
+.bell.on{background:var(--acc);color:#0A1000;border-color:var(--acc)}
+.bell.rec{border-color:var(--acc2);color:var(--acc2)}
+.bell:disabled{opacity:.3}
+.reps{display:flex;gap:8px;margin-top:11px}
+.repbox{flex:1;text-align:center}
+.repbox label{display:block;font-size:10px;color:var(--faint);font-weight:800;letter-spacing:.7px;margin-bottom:4px}
+.reps input{width:100%;padding:14px 2px;border-radius:12px;border:1.5px solid var(--line);
+  background:var(--card2);color:var(--txt);font-size:19px;font-weight:800;text-align:center;font-family:inherit;-moz-appearance:textfield}
+.reps input::-webkit-outer-spin-button,.reps input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.reps input:focus{outline:0;border-color:var(--acc)}
+.reps input.filled{border-color:var(--acc);color:var(--acc)}
+.faces{display:flex;gap:8px;margin-top:12px}
+.face{flex:1;padding:12px 4px;border-radius:13px;border:1.5px solid var(--line);background:var(--card2);
+  color:var(--dim);cursor:pointer;font-family:inherit;text-align:center}
+.face .fi{font-size:23px;line-height:1.15}
+.face .ft{font-size:10.5px;font-weight:800;margin-top:3px;letter-spacing:.2px}
+.face.on.easy{border-color:var(--acc2);color:var(--acc2);background:#0C2C34}
+.face.on.ok{border-color:var(--g);color:var(--g);background:#0E2C1E}
+.face.on.hard{border-color:var(--a);color:var(--a);background:#2E2408}
+.cue{background:#0E1A2C;border:1px solid #1D3350;color:#9DC4F0;border-radius:11px;
+  padding:10px 12px;font-size:12.5px;margin-top:11px;line-height:1.5}
+.hint{color:var(--faint);font-size:12px;margin-top:10px;line-height:1.5}
+.lockmsg{background:#251A0A;border:1px solid #4A3512;color:#FCD9A0;border-radius:11px;
+  padding:11px 12px;font-size:12.5px;margin-top:10px;line-height:1.5}
+
+/* badges */
+.bgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.badge{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:12px 7px;text-align:center;opacity:.32}
+.badge.on{opacity:1;border-color:var(--acc);background:#16210C}
+.badge .bi{font-size:25px;line-height:1.1}
+.badge .bn{font-size:10px;font-weight:800;margin-top:5px;letter-spacing:.2px;line-height:1.25}
+
+nav{position:fixed;bottom:0;left:0;right:0;z-index:50;display:flex;
+  background:rgba(8,12,22,.97);backdrop-filter:blur(14px);border-top:1px solid var(--line);
+  padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;background:0;border:0;color:var(--faint);padding:11px 2px 9px;
+  font-size:10.5px;font-weight:700;cursor:pointer;font-family:inherit}
+nav button.on{color:var(--acc)}
+nav svg{width:23px;height:23px;display:block;margin:0 auto 3px;stroke:currentColor;stroke-width:2;fill:none;
+  stroke-linecap:round;stroke-linejoin:round}
+
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:100;display:flex;align-items:flex-end}
+.sheet{background:var(--card);width:100%;max-height:88vh;overflow-y:auto;border-radius:24px 24px 0 0;
+  padding:22px 18px calc(24px + env(safe-area-inset-bottom));border-top:1px solid var(--line)}
+.toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);background:var(--acc);color:#0A1000;
+  padding:12px 20px;border-radius:99px;font-weight:800;font-size:14px;z-index:200;animation:pop .25s}
+@keyframes pop{from{opacity:0;transform:translate(-50%,14px)}}
+.rest{position:fixed;bottom:calc(78px + env(safe-area-inset-bottom));left:0;right:0;background:var(--acc2);
+  color:#00212A;padding:11px 18px;display:flex;justify-content:space-between;align-items:center;
+  font-weight:800;z-index:45}
+.rest button{background:rgba(0,0,0,.22);border:0;color:#00212A;padding:6px 13px;border-radius:99px;font-weight:800;cursor:pointer;font-family:inherit}
+.sw{display:flex;align-items:center;gap:11px;padding:13px 0;border-bottom:1px solid var(--line)}
+.sw:last-child{border-bottom:0}
+.sw input{width:22px;height:22px;accent-color:var(--acc);flex:none}
+textarea{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:12px;
+  color:var(--txt);padding:12px;font-family:inherit;font-size:14px;min-height:90px}
+.fin{background:linear-gradient(135deg,#1A2740,#141C2E);border:1px solid #2A3C5C}
+</style>
+</head>
+<body>
+<header><div class="hrow"><div><h1 id="ttl">FORGE</h1><div class="sub" id="sub"></div></div>
+<div id="hx" style="text-align:right"></div></div></header>
+<main id="app"></main>
+<nav>
+  <button id="n-today" onclick="go('today')"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>Train</button>
+  <button id="n-prog" onclick="go('prog')"><svg viewBox="0 0 24 24"><path d="M3 20h18M6 20V10M12 20V4M18 20v-7"/></svg>Progress</button>
+  <button id="n-skills" onclick="go('skills')"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Skills</button>
+  <button id="n-coach" onclick="go('coach')"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>Coach</button>
+</nav>
+
+<script>
+const KEY="forge.v1";
+let canLS=true; try{localStorage.setItem("__t","1");localStorage.removeItem("__t")}catch(e){canLS=false}
+let MEM=null;
+
+/* ================= BELLS =================
+   Fixed jumps: 4 6 8 10 12 16 kg. From 4 to 6 is +50%; 12 to 16 is +33%. The youth-training
+   guidance is to progress load by 5-10%. With these bells that is arithmetically impossible,
+   so load is NOT the progression variable here. Reps are. The bell only moves once the top of
+   the rep range is owned across every set — then reps reset to the bottom of the range.       */
+const BELLS=[4,6,8,10,12,16];
+
+/* ================= EXERCISES =================
+   type: "bell" = loaded reps | "body" = bodyweight reps | "time" = seconds (bell optional)
+   lock: null, or a skill key that must be unlocked by a coach before it appears.
+   sub:  the exercise shown in its place while it is locked.                                    */
+const EX={
+  goblet:{n:"Goblet Squat",t:"bell",s:2,lo:8,hi:12,b:2,rest:75,
+    cue:"Bell against your chest, elbows in. Sit down between your knees, not backwards. Chest stays proud."},
+  floorpress:{n:"Floor Press",t:"bell",s:3,lo:8,hi:12,b:1,rest:75,arm:true,
+    cue:"Lie on your back, knees bent. Press straight up. Elbow stops when it touches the floor - no bouncing."},
+  press:{n:"Standing Press",t:"bell",s:3,lo:8,hi:10,b:1,rest:75,arm:true,
+    cue:"Bell in the rack on your shoulder. Squeeze your bum and abs, press up, finish with the arm by your ear."},
+  pushup:{n:"Push-ups",t:"body",s:2,lo:6,hi:12,rest:60,
+    cue:"Body in one straight line. Hands under your shoulders. Chest to the floor, no sagging hips."},
+  hollow:{n:"Hollow Hold",t:"time",s:3,lo:20,hi:40,rest:45,
+    cue:"Lower back pressed flat into the floor. If it lifts, bring your legs higher - that is not cheating."},
+  deadlift:{n:"Kettlebell Deadlift",t:"bell",s:3,lo:8,hi:12,b:4,rest:75,
+    cue:"Push your hips back, keep the back flat. The bell travels straight up your shins. Stand tall at the top."},
+  row:{n:"One-Arm Row",t:"bell",s:3,lo:8,hi:12,b:2,rest:60,arm:true,
+    cue:"Free hand on a bench or your knee. Pull the bell to your hip, not your shoulder. Squeeze the shoulder blade."},
+  curl:{n:"Kettlebell Curl",t:"bell",s:3,lo:10,hi:15,b:1,rest:60,
+    cue:"Both hands on the handle. Elbows pinned to your sides. Slow on the way down - that is the half that counts."},
+  lunge:{n:"Reverse Lunge",t:"bell",s:2,lo:8,hi:12,b:1,rest:60,arm:true,
+    cue:"Step backwards, not forwards. Back knee kisses the floor. Front shin stays vertical."},
+  carry:{n:"Suitcase Carry",t:"time",s:3,lo:30,hi:45,b:3,rest:60,arm:true,bell:true,
+    cue:"One bell, one side. Walk tall and do not lean. Your abs are what stop you tipping over."},
+  racked:{n:"Racked Squat",t:"bell",s:3,lo:8,hi:12,b:2,rest:75,arm:true,
+    cue:"Bell in the rack position on one shoulder. Same squat as the goblet, but your abs have to fight the tilt."},
+  halo:{n:"Kettlebell Halo",t:"bell",s:2,lo:8,hi:10,b:0,rest:45,
+    cue:"Bell upside down by the horns. Circle it slowly around your head. Ribs stay down, no arching."},
+  plank:{n:"Plank",t:"time",s:3,lo:20,hi:45,rest:45,
+    cue:"Elbows under shoulders. Squeeze your bum hard. A shaking plank done right beats a still one done lazy."},
+  deadbug:{n:"Dead Bug",t:"body",s:2,lo:10,hi:15,rest:45,
+    cue:"Opposite arm and leg reach away slowly. Lower back glued to the floor the entire time."},
+  tkpress:{n:"Tall-Kneeling Press",t:"bell",s:2,lo:8,hi:12,b:1,rest:60,arm:true,
+    cue:"Both knees down, bum squeezed. Takes the legs out of it so the shoulder does all the work."},
+
+  /* --- locked skills --- */
+  swing:{n:"Two-Hand Swing",t:"bell",s:3,lo:10,hi:15,b:2,rest:90,lock:"swing",sub:"fastdl",
+    cue:"This is a HINGE, not a squat, and not a lift with the arms. Snap the hips, the bell floats to chest height."},
+  getup:{n:"Half Get-up",t:"bell",s:2,lo:3,hi:5,b:0,rest:75,lock:"getup",sub:"tkpress",arm:true,
+    cue:"Eyes on the bell the whole way. Slow. This is the one where rushing gets you hurt."},
+  clean:{n:"Kettlebell Clean",t:"bell",s:3,lo:6,hi:10,b:1,rest:75,lock:"clean",sub:"row",arm:true,
+    cue:"The bell should land softly in the rack. If it bangs your forearm, you are throwing it, not guiding it."},
+  fastdl:{n:"Fast Deadlift",t:"bell",s:3,lo:10,hi:15,b:3,rest:75,
+    cue:"A deadlift driven hard by the hips. This is how you learn the hinge that the swing is built on."}
+};
+
+const SKILLS={
+  swing:{n:"Two-Hand Swing",why:"The swing is a hip hinge done fast. Done as a squat or a front raise it loads the lower back. Sign it off once the hinge is clean and the arms stay passive.",
+    check:["Hips go back, not down","Back stays flat - no rounding","Arms stay relaxed, the hips do the work","Bell floats to chest height, not above","Can stop the set cleanly on command"]},
+  clean:{n:"Kettlebell Clean",why:"A bad clean bangs the forearm and teaches flinching. Sign it off once the bell lands quietly.",
+    check:["Bell lands softly in the rack","No banging on the forearm","Elbow tucks into the ribs","Same hinge as the swing"]},
+  getup:{n:"Half Get-up",why:"Slow, heavy on attention, and superb for the shoulder - but only when unrushed.",
+    check:["Eyes stay on the bell","Arm stays locked out throughout","Moves slowly and can pause anywhere","Comes back down under control"]}
+};
+
+/* ================= SESSIONS ================= */
+const SESS=[
+  {k:"A",n:"Push Day",sub:"Chest, shoulders, core",ex:["goblet","floorpress","press","pushup","hollow"]},
+  {k:"B",n:"Pull Day",sub:"Back, arms, legs",ex:["deadlift","row","curl","lunge","carry"]},
+  {k:"C",n:"Athlete Day",sub:"Power, full body",ex:["swing","racked","floorpress","row","getup","plank"]}
+];
+
+/* ================= FINISHERS =================
+   The point of these is that they are the bit he tells people about. Optional, bonus XP.      */
+const FINISHERS=[
+  {n:"The Ladder",i:"🪜",d:"Goblet Squat + Push-up, 5 of each, then 4, then 3, 2, 1. No stopping until you hit 1.",xp:20},
+  {n:"Beat the Clock",i:"⏱️",d:"4 minutes. As many rounds as you can: 5 goblet squats, 5 push-ups, 5 rows each arm. Write your round count down and beat it next time.",xp:20},
+  {n:"The Complex",i:"🔗",d:"Pick one bell you can handle and DO NOT put it down: 5 deadlifts, 5 rows, 5 racked squats, 5 presses. 2-3 rounds, rest 90 s between.",xp:25},
+  {n:"Farmer's Challenge",i:"🧱",d:"Heaviest bell you can hold with good posture. Walk until your grip says stop. Time it. That number is the target next time.",xp:20},
+  {n:"Plank Wars",i:"🛡️",d:"One max plank. Beat your personal best by even one second and it counts.",xp:15},
+  {n:"Dad vs Orlando",i:"⚔️",d:"Pick any one movement. Same bell, same reps, head to head. Loser racks the bells.",xp:25},
+  {n:"Halo Flow",i:"🌀",d:"60 seconds of continuous halos, changing direction every 10. Light bell. Harder than it sounds.",xp:15}
+];
+
+const BADGES=[
+  {k:"first",i:"🔥",n:"First Session",f:S=>S.sessions.length>=1},
+  {k:"five",i:"🖐️",n:"5 Sessions",f:S=>S.sessions.length>=5},
+  {k:"ten",i:"💪",n:"10 Sessions",f:S=>S.sessions.length>=10},
+  {k:"twentyfive",i:"🏆",n:"25 Sessions",f:S=>S.sessions.length>=25},
+  {k:"fullcycle",i:"🔄",n:"Full Cycle",f:S=>["A","B","C"].every(k=>S.sessions.some(s=>s.k===k))},
+  {k:"swing",i:"🔓",n:"Swing Unlocked",f:S=>!!S.unlocked.swing},
+  {k:"bellup",i:"⬆️",n:"Moved Up a Bell",f:S=>{
+      const m={}; let hit=false;
+      S.sessions.forEach(s=>s.entries.forEach(e=>{ if(e.bell==null) return;
+        if(m[e.x]!=null && e.bell>m[e.x]) hit=true; m[e.x]=Math.max(m[e.x]??0,e.bell); }));
+      return hit}},
+  {k:"twelve",i:"🥉",n:"Used the 12",f:S=>S.sessions.some(s=>s.entries.some(e=>e.bell>=12))},
+  {k:"sixteen",i:"🥇",n:"Used the 16",f:S=>S.sessions.some(s=>s.entries.some(e=>e.bell>=16))},
+  {k:"fin3",i:"🎲",n:"3 Finishers",f:S=>S.sessions.filter(s=>s.fin).length>=3},
+  {k:"week3",i:"📅",n:"3 in a Week",f:S=>{
+      const w={}; S.sessions.forEach(s=>{const d=new Date(s.date);
+        const k=d.getFullYear()+"-"+Math.floor((d-new Date(d.getFullYear(),0,1))/6048e5); w[k]=(w[k]||0)+1});
+      return Object.values(w).some(v=>v>=3)}},
+  {k:"perfect",i:"⭐",n:"All Just Right",f:S=>S.sessions.some(s=>s.entries.length>=4&&s.entries.every(e=>e.fb==="ok"))}
+];
+
+const LEVELS=["Rookie","Rookie","Apprentice","Apprentice","Grinder","Grinder","Iron","Iron","Steel","Steel","Forged"];
+const XP_PER=100;
+
+const DEF={
+  sessions:[], active:null, cycleIdx:0, xp:0, seenBadges:[],
+  unlocked:{swing:false,clean:false,getup:false},
+  settings:{name:"Orlando",sound:true}
+};
+
+function load(){
+  try{ const raw=canLS?localStorage.getItem(KEY):MEM;
+    if(!raw) return structuredClone(DEF);
+    const o=JSON.parse(raw);
+    return {...DEF,...o,
+      settings:{...DEF.settings,...(o.settings||{})},
+      unlocked:{...DEF.unlocked,...(o.unlocked||{})}};
+  }catch(e){ return structuredClone(DEF) }
+}
+let S=load();
+function save(){ const j=JSON.stringify(S); if(canLS){try{localStorage.setItem(KEY,j)}catch(e){MEM=j}} else MEM=j; }
+
+const $=s=>document.querySelector(s);
+const today=()=>new Date().toISOString().slice(0,10);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const lvl=()=>Math.min(LEVELS.length,Math.floor(S.xp/XP_PER)+1);
+const lvlName=()=>LEVELS[Math.min(LEVELS.length-1,lvl()-1)];
+function toast(m){ const t=document.createElement("div"); t.className="toast"; t.textContent=m;
+  document.body.appendChild(t); setTimeout(()=>t.remove(),1900); }
+function modal(html){ closeMod(); const o=document.createElement("div"); o.className="ov"; o.id="modal";
+  o.innerHTML=`<div class="sheet">${html}</div>`;
+  o.onclick=e=>{ if(e.target===o) closeMod() }; document.body.appendChild(o); }
+function closeMod(){ const m=$("#modal"); if(m) m.remove(); }
+
+/* ---------- rest timer ---------- */
+let R={end:0,dur:0,t:null};
+function startRest(sec){ if(!sec) return; R.end=Date.now()+sec*1000; R.dur=sec; tickRest();
+  if(R.t) clearInterval(R.t); R.t=setInterval(tickRest,250); }
+function stopRest(){ R.end=0; if(R.t){clearInterval(R.t);R.t=null} const b=$("#restbar"); if(b) b.remove(); }
+function tickRest(){
+  const left=Math.max(0,Math.round((R.end-Date.now())/1000));
+  let b=$("#restbar");
+  if(left<=0){ stopRest(); return }
+  if(!b){ b=document.createElement("div"); b.className="rest"; b.id="restbar"; document.body.appendChild(b) }
+  b.innerHTML=`<span>Rest &middot; ${Math.floor(left/60)}:${String(left%60).padStart(2,"0")}</span>
+    <button onclick="stopRest()">Skip</button>`;
+}
+
+/* ================= PROGRESSION =================
+   Double progression. Reps climb inside the range; the bell only moves when the top of the
+   range has been hit on every set. "Too hard" walks the reps back rather than the load,
+   because with these bells a load step down is a 20-33% cliff.                                */
+const hasBell=x=> x.t==="bell" || (x.t==="time" && x.bell===true);
+function lastPerf(xk){
+  for(let i=S.sessions.length-1;i>=0;i--){
+    const e=S.sessions[i].entries.find(e=>e.x===xk);
+    if(e) return e;
+  }
+  return null;
+}
+function recommend(xk){
+  const x=EX[xk], last=lastPerf(xk);
+  const startB = x.b??0, useBell=hasBell(x);
+  if(!last) return {bell:useBell?BELLS[startB]:null, reps:x.lo, fresh:true,
+    why: !useBell
+       ? `Start at ${x.lo}${x.t==="time"?" seconds":""}. Add more once they all look clean.`
+       : `Start on the ${BELLS[startB]} kg. If it flies up, go heavier next time - not today.`};
+  const hitTop = last.sets.every(v=>v!=null && v>=x.hi);
+  const bi = last.bell==null ? null : BELLS.indexOf(last.bell);
+  const canUp = bi!=null && bi<BELLS.length-1;
+
+  if(last.fb==="hard"){
+    const r=Math.max(x.lo,(last.target??x.lo)-1);
+    return {bell:last.bell, reps:r, why:`Last time was too hard. Same weight, ${r} reps. Nail it before it moves again.`};
+  }
+  if(hitTop && (last.fb==="easy"||last.fb==="ok")){
+    if(canUp) return {bell:BELLS[bi+1], reps:x.lo, up:true,
+      why:`You owned ${x.hi} on the ${last.bell} kg. Move up to the ${BELLS[bi+1]} kg and start again at ${x.lo}.`};
+    return {bell:last.bell, reps:(last.target??x.hi)+1,
+      why:`Top bell already. Keep adding a rep - ${(last.target??x.hi)+1} this time.`};
+  }
+  const step = last.fb==="easy"?2:1;
+  const r=Math.min(x.hi,(last.target??x.lo)+step);
+  return {bell:last.bell, reps:r,
+    why: r>(last.target??x.lo)
+      ? `${last.fb==="easy"?"Felt easy":"Good"} last time - go for ${r}${x.t==="time"?" seconds":" reps"}.`
+      : `Hold at ${r}${x.t==="time"?" seconds":" reps"} until every set is clean.`};
+}
+
+/* which exercise actually shows, given locks */
+function resolve(xk){
+  const x=EX[xk];
+  if(x.lock && !S.unlocked[x.lock]) return {key:x.sub, locked:true, orig:xk};
+  return {key:xk, locked:false};
+}
+
+/* ================= VIEWS ================= */
+let VIEW="today";
+function go(v){ VIEW=v; render(); window.scrollTo(0,0); }
+function render(){
+  ["today","prog","skills","coach"].forEach(v=>{
+    const b=$("#n-"+(v==="today"?"today":v==="prog"?"prog":v==="skills"?"skills":"coach"));
+    if(b) b.classList.toggle("on",VIEW===v);
+  });
+  const A=$("#app");
+  $("#hx").innerHTML = S.active ? "" :
+    `<div style="font-size:11px;color:var(--faint);font-weight:800;letter-spacing:.6px">LEVEL ${lvl()}</div>
+     <div style="font-size:15px;font-weight:850;color:var(--acc)">${lvlName()}</div>`;
+  if(S.active) return vSession(A);
+  if(VIEW==="today") return vToday(A);
+  if(VIEW==="prog") return vProg(A);
+  if(VIEW==="skills") return vSkills(A);
+  if(VIEW==="coach") return vCoach(A);
+}
+
+function weekCount(){
+  const now=new Date(), start=new Date(now); start.setDate(now.getDate()-now.getDay());
+  start.setHours(0,0,0,0);
+  return S.sessions.filter(s=>new Date(s.date)>=start).length;
+}
+
+function vToday(A){
+  const s=SESS[S.cycleIdx%3];
+  $("#ttl").textContent="FORGE";
+  $("#sub").textContent=S.sessions.length?`${S.sessions.length} sessions done`:"Let's go";
+  const wc=weekCount();
+  const xpIn=S.xp%XP_PER;
+  let h=`<div class="card">
+    <div class="row"><div>
+      <div class="lbl" style="margin:0">Level ${lvl()} &middot; ${lvlName()}</div>
+      <div style="font-size:12.5px;color:var(--dim);margin-top:5px">${XP_PER-xpIn} XP to level ${lvl()+1}</div>
+    </div><div class="big" style="color:var(--acc)">${S.xp}</div></div>
+    <div class="xpwrap"><div class="xpbar" style="width:${xpIn}%"></div></div>
+  </div>`;
+
+  h+=`<div class="card"><div class="lbl">This week</div>
+    <div class="row"><div class="big">${wc}<span style="font-size:15px;color:var(--dim)">/3</span></div>
+    <div style="display:flex;gap:6px">${[0,1,2].map(i=>`<div style="width:30px;height:30px;border-radius:9px;
+      background:${i<wc?"var(--acc)":"var(--card2)"};border:1px solid ${i<wc?"var(--acc)":"var(--line)"}"></div>`).join("")}</div></div>
+    <div class="tiny" style="margin-top:10px">${wc>=3?"Target hit. Anything extra is a bonus.":
+      wc===0?"Three sessions this week, with a rest day between each.":"Keep a day's gap between sessions - that's when you actually get stronger."}</div>
+  </div>`;
+
+  h+=`<div class="card">
+    <div class="lbl">Next up</div>
+    <div style="font-size:25px;font-weight:850;letter-spacing:-.6px">${s.n}</div>
+    <div class="muted" style="font-size:13.5px;margin-top:3px">${s.sub}</div>
+    <div style="margin-top:13px;display:flex;flex-wrap:wrap;gap:6px">
+      ${s.ex.map(k=>{const r=resolve(k);return `<span class="pill ${r.locked?"a":""}">${EX[r.key].n}${r.locked?" 🔒":""}</span>`}).join("")}
+    </div>
+    <div style="height:15px"></div>
+    <button class="btn" onclick="startSession()">Start ${esc(s.n)}</button>
+  </div>`;
+
+  const locked=Object.keys(SKILLS).filter(k=>!S.unlocked[k]);
+  if(locked.length) h+=`<div class="card tight"><div class="lbl">Locked skills</div>
+    <div class="tiny">${locked.length} skill${locked.length>1?"s":""} still locked. Dad unlocks them in the Coach tab once your technique is signed off. Until then a safe swap runs in their place.</div></div>`;
+
+  h+=`<div class="card tight" style="border-color:#3A2A12;background:#1A1408">
+    <div class="tiny" style="color:#E8C98A"><b>The one rule:</b> stop a set when the reps stop looking good.
+    Never grind to the point of failure - that isn't where the strength comes from, and it's where the injuries are.
+    Sharp pain is not effort. If something hurts, stop and tell Dad.</div></div>`;
+  A.innerHTML=h;
+}
+
+function startSession(){
+  const s=SESS[S.cycleIdx%3];
+  S.active={k:s.k,n:s.n,date:today(),
+    entries:s.ex.map(k=>{ const r=resolve(k);
+      const rec=recommend(r.key);
+      return {x:r.key, lockedFrom:r.locked?r.orig:null, bell:rec.bell, target:rec.reps,
+              sets:new Array(EX[r.key].s).fill(null), fb:null}; }),
+    fin:null};
+  save(); render();
+}
+
+function vSession(A){
+  const a=S.active;
+  $("#ttl").textContent=a.n;
+  const total=a.entries.length, done=a.entries.filter(e=>e.fb).length;
+  $("#sub").textContent=`${done}/${total} exercises`;
+  let h="";
+  a.entries.forEach((ent,ei)=>{
+    const x=EX[ent.x], rec=recommend(ent.x);
+    const isDone=!!ent.fb;
+    h+=`<div class="ex ${isDone?"done":""}">
+      <div class="row" style="align-items:flex-start">
+        <div style="flex:1"><div class="exn">${esc(x.n)}${x.arm?' <span class="tiny">each side</span>':""}</div>
+        <div class="exm">${x.s} sets &middot; target ${ent.target}${x.t==="time"?" sec":" reps"}</div></div>
+        ${isDone?'<span class="pill g">done</span>':""}
+      </div>`;
+    if(ent.lockedFrom) h+=`<div class="lockmsg">🔒 <b>${esc(EX[ent.lockedFrom].n)}</b> is locked, so you're doing
+      <b>${esc(x.n)}</b> instead. It builds the exact same movement - this is the on-ramp, not a downgrade.</div>`;
+    if(hasBell(x)){
+      h+=`<div class="bells">${BELLS.map((b,i)=>`<button class="bell ${ent.bell===b?"on":""} ${ent.bell!==b&&rec.bell===b?"rec":""}"
+        onclick="setBell(${ei},${b})">${b}</button>`).join("")}</div>
+        <div class="tiny">kg &middot; tap to change</div>`;
+    }
+    h+=`<div class="reps">${ent.sets.map((v,si)=>`<div class="repbox">
+      <label>SET ${si+1}</label>
+      <input id="s-${ei}-${si}" type="number" inputmode="numeric" class="${v!=null?"filled":""}"
+        placeholder="${ent.target}" value="${v??""}" oninput="onRep(this,${ei},${si})">
+    </div>`).join("")}</div>`;
+    h+=`<div class="faces">
+      ${[["easy","😃","Easy"],["ok","😤","Just right"],["hard","🥵","Too hard"]].map(([k,i,t])=>
+        `<button class="face ${k} ${ent.fb===k?"on":""}" onclick="setFb(${ei},'${k}')">
+          <div class="fi">${i}</div><div class="ft">${t}</div></button>`).join("")}
+    </div>`;
+    h+=`<div class="cue">${esc(x.cue)}</div>`;
+    h+=`<div class="hint">${esc(rec.why)}</div>`;
+    h+=`</div>`;
+  });
+
+  const fin=FINISHERS[(S.sessions.length+S.cycleIdx)%FINISHERS.length];
+  h+=`<div class="card fin">
+    <div class="lbl" style="color:var(--acc2)">Finisher &middot; optional &middot; +${fin.xp} XP</div>
+    <div style="font-size:19px;font-weight:850">${fin.i} ${esc(fin.n)}</div>
+    <div class="muted" style="font-size:13.5px;margin-top:7px;line-height:1.55">${esc(fin.d)}</div>
+    <div style="height:13px"></div>
+    <button class="btn ${a.fin?"sec":"cy"}" onclick="toggleFin('${esc(fin.n)}',${fin.xp})">
+      ${a.fin?"✓ Done - tap to undo":"Mark it done"}</button>
+  </div>`;
+
+  h+=`<button class="btn" onclick="finish()">Finish session</button>
+    <div style="height:9px"></div>
+    <button class="btn gho" onclick="if(confirm('Throw this session away?')){S.active=null;save();stopRest();go('today')}">Cancel</button>
+    <div style="height:24px"></div>`;
+  A.innerHTML=h;
+}
+
+function setBell(ei,b){ S.active.entries[ei].bell=b; save(); vSession($("#app")); }
+let advT=null;
+function onRep(el,ei,si){
+  if(advT) clearTimeout(advT);
+  const raw=el.value.trim();
+  const ent=S.active.entries[ei];
+  ent.sets[si]= raw===""?null:parseInt(raw,10);
+  if(isNaN(ent.sets[si])) ent.sets[si]=null;
+  el.classList.toggle("filled",raw!=="");
+  save();
+  if(raw==="") return;
+  advT=setTimeout(()=>{
+    const nxt=document.getElementById(`s-${ei}-${si+1}`);
+    if(nxt){ nxt.focus(); nxt.select&&nxt.select(); return }
+    el.blur();
+    const x=EX[ent.x];
+    if(ent.sets.every(v=>v!=null)) startRest(x.rest);
+  },900);
+}
+function setFb(ei,k){
+  const ent=S.active.entries[ei];
+  ent.fb = ent.fb===k?null:k;
+  // Feeding back a rating means the sets happened - fill any blanks with the target.
+  if(ent.fb) ent.sets=ent.sets.map(v=>v==null?ent.target:v);
+  save(); vSession($("#app"));
+  if(ent.fb) startRest(EX[ent.x].rest);
+}
+function toggleFin(n,xp){ S.active.fin = S.active.fin?null:{n,xp}; save(); vSession($("#app")); }
+
+function finish(){
+  const a=S.active;
+  const logged=a.entries.filter(e=>e.fb||e.sets.some(v=>v!=null));
+  if(!logged.length){ toast("Nothing logged yet"); return }
+  let gained = logged.length*10 + 25 + (a.fin?a.fin.xp:0);
+  const before=lvl();
+  S.xp+=gained;
+  S.sessions.push({date:a.date,k:a.k,n:a.n,fin:a.fin?a.fin.n:null,
+    entries:logged.map(e=>({x:e.x,bell:e.bell,target:e.target,sets:e.sets,fb:e.fb}))});
+  S.cycleIdx++; S.active=null; stopRest(); save();
+  const after=lvl();
+  const newB=BADGES.filter(b=>b.f(S)&&!S.seenBadges.includes(b.k));
+  newB.forEach(b=>S.seenBadges.push(b.k)); save();
+  let h=`<div style="text-align:center">
+    <div style="font-size:46px">${after>before?"🎉":"✅"}</div>
+    <div style="font-size:23px;font-weight:850;margin-top:5px">Session done</div>
+    <div style="font-size:34px;font-weight:850;color:var(--acc);margin-top:9px">+${gained} XP</div>`;
+  if(after>before) h+=`<div class="pill p" style="margin-top:11px;font-size:13px;padding:7px 15px">
+    Level ${after} &middot; ${LEVELS[Math.min(LEVELS.length-1,after-1)]}</div>`;
+  if(newB.length) h+=`<div style="margin-top:17px"><div class="lbl">New badge${newB.length>1?"s":""}</div>
+    <div class="bgrid">${newB.map(b=>`<div class="badge on"><div class="bi">${b.i}</div><div class="bn">${b.n}</div></div>`).join("")}</div></div>`;
+  h+=`</div><div style="height:19px"></div><button class="btn" onclick="closeMod();go('today')">Nice</button>`;
+  modal(h); render();
+}
+
+function vProg(A){
+  $("#ttl").textContent="Progress";
+  $("#sub").textContent=`Level ${lvl()} \u00b7 ${S.xp} XP`;
+  let h=`<div class="card"><div class="lbl">Badges</div>
+    <div class="bgrid">${BADGES.map(b=>`<div class="badge ${b.f(S)?"on":""}">
+      <div class="bi">${b.f(S)?b.i:"🔒"}</div><div class="bn">${b.n}</div></div>`).join("")}</div>
+    <div class="tiny" style="margin-top:11px">${BADGES.filter(b=>b.f(S)).length} of ${BADGES.length} unlocked</div></div>`;
+
+  // best per exercise
+  const seen={};
+  S.sessions.forEach(s=>s.entries.forEach(e=>{
+    const best=Math.max(...e.sets.filter(v=>v!=null),0);
+    const score=(e.bell||1)*1000+best;
+    if(!seen[e.x]||score>seen[e.x].score) seen[e.x]={bell:e.bell,reps:best,score,date:s.date};
+  }));
+  const ks=Object.keys(seen);
+  if(ks.length){
+    h+=`<div class="card"><div class="lbl">Personal bests</div>`;
+    ks.forEach(k=>{ const b=seen[k], x=EX[k];
+      h+=`<div class="row" style="padding:9px 0;border-bottom:1px solid var(--line)">
+        <span style="font-size:14px">${esc(x.n)}</span>
+        <span style="font-weight:850">${b.bell?b.bell+" kg × ":""}${b.reps}${x.t==="time"?"s":""}</span></div>`;
+    });
+    h+=`</div>`;
+  }
+
+  h+=`<div class="card"><div class="lbl">Bell rack</div>
+    <div style="display:flex;gap:7px">${BELLS.map(b=>{
+      const used=S.sessions.some(s=>s.entries.some(e=>e.bell>=b));
+      return `<div style="flex:1;text-align:center;padding:13px 3px;border-radius:12px;
+        background:${used?"#16210C":"var(--card2)"};border:1px solid ${used?"var(--acc)":"var(--line)"};
+        color:${used?"var(--acc)":"var(--faint)"};font-weight:850">${b}</div>`}).join("")}</div>
+    <div class="tiny" style="margin-top:10px">The rack lights up to your heaviest bell so far. Working all the way to the 16 is the whole game.</div></div>`;
+
+  if(S.sessions.length){
+    h+=`<div class="card"><div class="lbl">Recent sessions</div>`;
+    S.sessions.slice(-12).reverse().forEach(s=>{
+      const faces=s.entries.map(e=>e.fb==="easy"?"😃":e.fb==="ok"?"😤":e.fb==="hard"?"🥵":"·").join(" ");
+      h+=`<div style="padding:10px 0;border-bottom:1px solid var(--line)">
+        <div class="row"><span style="font-weight:700">${esc(s.n)}</span>
+        <span class="tiny">${s.date}</span></div>
+        <div style="font-size:15px;margin-top:4px">${faces}</div>
+        ${s.fin?`<div class="tiny" style="margin-top:3px">Finisher: ${esc(s.fin)}</div>`:""}</div>`;
+    });
+    h+=`</div>`;
+  } else {
+    h+=`<div class="card"><div class="muted" style="font-size:14px">Nothing logged yet. Do the first session and this fills up.</div></div>`;
+  }
+  A.innerHTML=h;
+}
+
+function vSkills(A){
+  $("#ttl").textContent="Skills";
+  const n=Object.keys(SKILLS).filter(k=>S.unlocked[k]).length;
+  $("#sub").textContent=`${n}/${Object.keys(SKILLS).length} unlocked`;
+  let h=`<div class="card tight"><div class="tiny">These three are the real kettlebell lifts. They're locked until
+    Dad has watched you do them properly, because they're the ones where sloppy form actually costs you.
+    Until then the app runs a safe stand-in that teaches the same movement.</div></div>`;
+  Object.entries(SKILLS).forEach(([k,s])=>{
+    const on=S.unlocked[k];
+    h+=`<div class="card ${on?"":"locked"}">
+      <div class="row"><div style="font-size:18px;font-weight:850">${on?"🔓":"🔒"} ${esc(s.n)}</div>
+      <span class="pill ${on?"g":"a"}">${on?"unlocked":"locked"}</span></div>
+      <div class="muted" style="font-size:13px;margin-top:8px;line-height:1.55">${esc(s.why)}</div>
+      <div class="lbl" style="margin-top:14px">Sign-off checklist</div>
+      ${s.check.map(c=>`<div style="display:flex;gap:9px;padding:5px 0;font-size:13.5px">
+        <span style="color:${on?"var(--acc)":"var(--faint)"}">${on?"✓":"○"}</span><span>${esc(c)}</span></div>`).join("")}
+      ${on?"":`<div class="tiny" style="margin-top:11px">Dad unlocks this in the Coach tab.</div>`}
+    </div>`;
+  });
+  A.innerHTML=h;
+}
+
+function vCoach(A){
+  $("#ttl").textContent="Coach";
+  $("#sub").textContent="For Dad";
+  let h=`<div class="card"><div class="lbl">Technique sign-off</div>
+    <div class="tiny" style="margin-bottom:6px">Only flip these once you've watched the movement and you're happy with every line on the checklist. Turning one on makes it appear in the program immediately.</div>`;
+  Object.entries(SKILLS).forEach(([k,s])=>{
+    h+=`<div class="sw"><input type="checkbox" ${S.unlocked[k]?"checked":""}
+      onchange="unlock('${k}',this.checked)">
+      <div><div style="font-weight:700;font-size:14.5px">${esc(s.n)}</div>
+      <div class="tiny">${S.unlocked[k]?"In the program":"Running the safe swap instead"}</div></div></div>`;
+  });
+  h+=`</div>`;
+
+  h+=`<div class="card"><div class="lbl">How the progression works</div>
+    <div class="muted" style="font-size:13px;line-height:1.6">
+    Your bells jump 4 → 6 → 8 → 10 → 12 → 16 kg. From the 4 to the 6 is a 50% increase; the youth
+    strength guidance is to add 5–10% at a time. You physically cannot do that with a fixed bell set,
+    so <b>load is not the progression variable here — reps are.</b><br><br>
+    He adds reps inside the range session by session. Only once he hits the top of the range on
+    <i>every</i> set, and rates it Easy or Just right, does the app move him to the next bell and drop
+    him back to the bottom of the range. A "Too hard" rating walks the reps back rather than the weight.
+    </div></div>`;
+
+  h+=`<div class="card"><div class="lbl">What the program is doing</div>
+    <div class="muted" style="font-size:13px;line-height:1.6">
+    Three sessions on rotation, meant for 3 a week with a day between. That's the evidence-backed dose
+    for his age — a fourth day adds fatigue faster than it adds strength, so the finishers exist to
+    scratch that itch instead.<br><br>
+    Sets and reps sit in the novice-to-intermediate band (2–3 sets, 8–15 reps). Nothing goes to failure
+    and there are no max lifts, which is the single clearest instruction in the youth training literature.
+    <br><br>
+    It's front-loaded with pressing, rows and curls so it looks and feels like the program he asked for.
+    Underneath, the hinge, squat and carry work is all there — that's the part that actually makes him
+    durable, and it's about 40% of the total volume.
+    </div></div>`;
+
+  h+=`<div class="card"><div class="lbl">Deliberately not in here</div>
+    <div class="muted" style="font-size:13px;line-height:1.6">
+    No bodyweight tracking, no body-fat talk, no before-and-after framing, no appearance language anywhere
+    in the app. At 13 that combination is the known risk factor, and it's easy to avoid without losing
+    anything he actually wants. Progress is shown as bells lifted, reps added and levels earned.
+    </div></div>`;
+
+  h+=`<div class="card"><div class="lbl">Send to Claude</div>
+    <div class="muted" style="font-size:13px">Copies the full log. Paste it into a Claude session for a review.</div>
+    <div style="height:11px"></div>
+    <button class="btn sec" onclick="copyLog()">Copy log</button>
+    <div style="height:8px"></div>
+    <button class="btn gho" onclick="if(confirm('Erase everything and start over?')){localStorage.removeItem(KEY);S=structuredClone(DEF);save();go('today')}">Reset all data</button>
+  </div>`;
+  A.innerHTML=h;
+}
+function unlock(k,v){
+  S.unlocked[k]=v; save();
+  toast(v?SKILLS[k].n+" unlocked":SKILLS[k].n+" locked");
+  render();
+}
+function copyLog(){
+  const j=JSON.stringify({app:"FORGE",exported:new Date().toISOString(),xp:S.xp,level:lvl(),
+    unlocked:S.unlocked,sessions:S.sessions},null,1);
+  const ta=document.createElement("textarea"); ta.value=j; ta.style.position="fixed"; ta.style.opacity="0";
+  document.body.appendChild(ta); ta.select();
+  try{ document.execCommand("copy"); toast("Copied") }catch(e){ toast("Copy failed") }
+  ta.remove();
+}
+
+if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
+render();
+</script>
+</body>
+</html>
