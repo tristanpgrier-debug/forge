@@ -87,6 +87,54 @@ main{padding:16px 14px 30px;max-width:620px;margin:0 auto}
 .lockmsg{background:#251A0A;border:1px solid #4A3512;color:#FCD9A0;border-radius:11px;
   padding:11px 12px;font-size:12.5px;margin-top:10px;line-height:1.5}
 
+/* per-set logging */
+.setrow{display:flex;gap:6px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line)}
+.setrow:last-of-type{border-bottom:0}
+.setn{font-size:9.5px;font-weight:800;color:var(--faint);width:30px;flex:0 0 30px;letter-spacing:.5px}
+.setbell,.setrep{background:var(--card2);border:1px solid var(--line);border-radius:10px;
+  color:var(--txt);font-family:inherit;font-weight:800;padding:10px 4px;text-align:center;-webkit-appearance:none}
+.setbell{width:58px;flex:0 0 58px;font-size:12.5px;font-weight:750}
+.setrep{width:56px;flex:0 0 56px;font-size:16px}
+.setrep.filled{border-color:var(--acc);color:var(--acc)}
+.setrep::placeholder{color:var(--faint);font-weight:600}
+.sf{display:flex;gap:4px;margin-left:auto}
+.sfb{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:var(--card2);
+  font-size:16px;padding:0;cursor:pointer;line-height:1}
+.sfb.on.easy{background:#0E3A22;border-color:var(--g)}
+.sfb.on.ok{background:#16210C;border-color:var(--acc)}
+.sfb.on.hard{background:#3A1520;border-color:var(--r)}
+.n10{display:flex;gap:3px;padding:0 0 9px 30px}
+.n10 button{flex:1;min-width:0;height:30px;border-radius:7px;border:1px solid var(--line);
+  background:var(--card2);color:var(--dim);font-size:11px;font-weight:800;padding:0;font-family:inherit}
+.n10 button.on{background:var(--acc);border-color:var(--acc);color:#0A1000}
+.ytl{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:8px 12px;border-radius:10px;
+  background:var(--card2);border:1px solid var(--line);color:var(--acc2);font-size:12.5px;
+  font-weight:800;text-decoration:none}
+.hrow2{display:flex;gap:9px;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--line)}
+.hsets{font-weight:800;font-size:14px;letter-spacing:-.2px}
+
+/* quote of the day */
+.qcard{border-left:3px solid var(--acc)}
+.qtxt{font-size:16.5px;font-weight:750;line-height:1.45;letter-spacing:-.25px}
+
+/* week calendar */
+.wk{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.wd .dn{font-size:9.5px;font-weight:800;color:var(--faint);letter-spacing:.6px;text-align:center;margin-bottom:5px}
+.wd .db{height:40px;border-radius:12px;border:1px solid var(--line);background:var(--card2);
+  display:flex;align-items:center;justify-content:center;font-weight:850;font-size:13px;color:var(--faint)}
+.wd .db.on{background:var(--acc);border-color:var(--acc);color:#0A1000}
+.wd .db.td{border-color:var(--acc2)}
+.wd .db.fut{opacity:.4}
+.mini{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;flex:1}
+.mini i{height:14px;border-radius:4px;background:var(--card2);border:1px solid var(--line)}
+.mini i.on{background:var(--acc);border-color:var(--acc)}
+.pbar{height:10px;background:var(--card2);border-radius:99px;overflow:hidden;border:1px solid var(--line);margin-top:10px}
+.pbar>i{display:block;height:100%;background:linear-gradient(90deg,var(--acc2),var(--acc));border-radius:99px;transition:width .5s}
+.prz{display:flex;gap:11px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}
+.prz .pd{width:34px;height:34px;flex:0 0 34px;border-radius:11px;display:flex;align-items:center;justify-content:center;
+  font-weight:850;font-size:12px;background:var(--card2);border:1px solid var(--line);color:var(--faint)}
+.prz.won .pd{background:#16210C;border-color:var(--acc);color:var(--acc)}
+
 /* badges */
 .bgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
 .badge{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:12px 7px;text-align:center;opacity:.32}
@@ -238,32 +286,223 @@ const BADGES=[
       const w={}; S.sessions.forEach(s=>{const d=new Date(s.date);
         const k=d.getFullYear()+"-"+Math.floor((d-new Date(d.getFullYear(),0,1))/6048e5); w[k]=(w[k]||0)+1});
       return Object.values(w).some(v=>v>=3)}},
+  {k:"week4",i:"⚡",n:"Big Week",f:S=>allWeeks().some(w=>w.n>=WK_BONUS)},
   {k:"perfect",i:"⭐",n:"All Just Right",f:S=>S.sessions.some(s=>s.entries.length>=4&&s.entries.every(e=>e.fb==="ok"))}
 ];
+
+/* Quote of the day. Written for FORGE rather than borrowed:
+   stock gym quotes are mostly grindset ("no pain no gain"), which argues with
+   the one rule on the Train tab, and half the famous ones are misattributed.
+   Dad can add his own in the Coach tab - those come first in the pool. */
+const QUOTES=[
+ "The rep you do properly is the only one that counts.",
+ "Slow is smooth. Smooth is strong.",
+ "If the last rep looked bad, that wasn't a rep. That was a warning.",
+ "Anyone can lift it. Not everyone can control it.",
+ "Form first. The weight follows on its own.",
+ "A clean six beats a messy ten. Every time.",
+ "Own the weight before you ask for more.",
+ "If you have to throw it, it's too heavy.",
+ "The bell doesn't care how you lift it. Your shoulders do.",
+ "Technique is what's left when you're tired.",
+ "Control on the way down is where the strength actually comes from.",
+ "Put it down properly. The set isn't over until it's on the floor.",
+ "Turning up on the day you don't feel like it is the whole thing.",
+ "Three ordinary sessions beat one heroic one.",
+ "Nobody gets strong in a day. Everybody gets strong over a year.",
+ "You can't cram strength the night before.",
+ "The best session is the one you actually did.",
+ "Boring, repeated, is what works. Nobody wants to hear it.",
+ "Miss one, fine. Miss three and it's a habit.",
+ "Small, often, for ages. That's the whole secret.",
+ "Motivation gets you started. A routine keeps you going.",
+ "Start before you feel ready. You'll never feel ready.",
+ "Half a session beats no session, and it counts.",
+ "The hardest part is putting your shoes on.",
+ "You won't notice it happening. Then one day the 12 feels light.",
+ "Progress is one more rep than last time. That's it.",
+ "Everyone started where you're starting.",
+ "You're not behind. You're early.",
+ "Strong takes years, not weeks. That's why it's worth having.",
+ "Compare today to last month. Not to anybody else.",
+ "The bell you can't lift is one you can't lift yet.",
+ "One extra rep a week is fifty extra reps a year.",
+ "It's meant to feel slow. Slow is what lasts.",
+ "The people who look like naturals just started earlier.",
+ "Nothing you learn here goes to waste.",
+ "Strength is a skill, and skills get practised.",
+ "You don't get stronger in the session. You get stronger after it.",
+ "A rest day is part of the training, not a day off from it.",
+ "Sleep is the cheapest strength you'll ever get.",
+ "Tired isn't tough. It's just tired.",
+ "Sore for three days means you did too much, not enough.",
+ "Rest days aren't earned. They're scheduled.",
+ "Eat properly. You can't build anything out of nothing.",
+ "Leave your ego at the door. It can't lift anyway.",
+ "Nobody is watching. Train like it.",
+ "Lifting more than you can control isn't brave.",
+ "There's no prize for being wrecked.",
+ "Hard is fine. Reckless isn't.",
+ "The strongest person in the room is usually the calmest.",
+ "You don't have to prove anything today. Just do the work.",
+ "Stopping one rep early is a decision, not a failure.",
+ "Do the boring bits properly and the good bits take care of themselves.",
+ "You're allowed to be bad at something new.",
+ "Discipline is deciding once instead of deciding every day.",
+ "Ask why. Understanding the movement makes you learn twice as fast.",
+ "Being coachable is a superpower.",
+ "Effort is the one thing you completely control.",
+ "Finish the set you started.",
+ "Confidence comes from evidence. Go and make some.",
+ "The 16 isn't the goal. Being able to use it properly is.",
+ "You're building something that has to last another sixty years. Build it properly.",
+ "There's no shortcut, which is good news. It just means it's work.",
+ "Show up, do it right, go home. Repeat.",
+ // written at him directly - {name} is filled from Settings
+ "Morning, {name}. The bells don't move themselves.",
+ "{name}, the only person you're racing is the one from last week.",
+ "Nobody your age is doing this properly. You are.",
+ "You're 13. Do this right and you never have to start from scratch again.",
+ "The hardest set today is still easier than the first one you ever did.",
+ "You're growing faster now than you ever will again. Give it something to build on.",
+ "Growing fast makes you clumsy for a while. That isn't you getting worse.",
+ "{name}, you don't have to be strong today. You have to be here today.",
+ "Being the kid who kept turning up is a very good thing to be.",
+ "Nobody remembers the session you skipped except you.",
+ "Half the people who start this quit inside a month. Don't be interesting. Be boring.",
+ "Ask Dad to watch a set. Free coaching is free coaching.",
+ "Do it properly now and the heavy stuff is easy later.",
+ "Sport gets easier when the gym gets harder.",
+ "One day someone asks how long you've been training. Start the clock, {name}."
+];
+function customQuotes(){ return (S.settings.quotes||[])
+  .filter(q=>typeof q==="string"&&q.trim()).map(q=>q.trim()); }
+function dayIndex(){ const d=new Date(); d.setHours(12,0,0,0);   // local noon -> turns over at local midnight
+  return Math.floor(d.getTime()/864e5); }
+/* Dad's lines alternate with the built-ins: even days his, odd days mine.
+   That way one line he writes still shows up every other day, and fifty
+   still cycle properly. */
+function heroName(){ const n=((S.settings&&S.settings.name)||"").trim(); return n||"you"; }
+function fillName(q){ return String(q).replace(/\{name\}/g, heroName()); }
+function quoteOfDay(){
+  const c=customQuotes(), n=dayIndex();
+  const pick=(a,i)=>a[((i%a.length)+a.length)%a.length];
+  if(c.length && n%2===0) return fillName(pick(c,Math.floor(n/2)));
+  if(!QUOTES.length) return c.length?fillName(pick(c,n)):"";
+  return fillName(pick(QUOTES, c.length?Math.floor(n/2):n));
+}
+function quoteCard(){
+  const q=quoteOfDay(); if(!q) return "";
+  return `<div class="card qcard"><div class="lbl">Today's line</div>
+    <div class="qtxt">${esc(q)}</div></div>`;
+}
+
+/* ================= TECHNIQUE VIDEO =================
+   Deliberately NOT hardcoded video IDs. A guessed or stale ID either dead-links or drops a
+   13-year-old on whatever else now sits at that URL. Default is a search for the movement;
+   Dad pastes a specific vetted video per exercise in the Coach tab and that one wins. */
+const YT={
+  goblet:"kettlebell goblet squat technique tutorial",
+  floorpress:"kettlebell floor press technique tutorial",
+  press:"kettlebell strict press technique tutorial",
+  pushup:"how to do a proper push up technique",
+  hollow:"hollow body hold technique tutorial",
+  deadlift:"kettlebell deadlift technique tutorial",
+  row:"kettlebell single arm row technique tutorial",
+  curl:"kettlebell curl technique tutorial",
+  lunge:"kettlebell reverse lunge technique tutorial",
+  carry:"kettlebell suitcase carry technique tutorial",
+  racked:"kettlebell racked squat technique tutorial",
+  halo:"kettlebell halo technique tutorial",
+  plank:"how to do a proper plank technique",
+  deadbug:"dead bug exercise technique tutorial",
+  tkpress:"tall kneeling kettlebell press technique",
+  swing:"kettlebell two hand swing technique tutorial",
+  getup:"kettlebell half get up technique tutorial",
+  clean:"kettlebell clean technique tutorial",
+  fastdl:"kettlebell hinge deadlift technique tutorial"
+};
+function ytLink(k){
+  const custom=((S.settings&&S.settings.videos)||{})[k];
+  if(typeof custom==="string" && /^https?:\/\//i.test(custom.trim())) return custom.trim();
+  const q=YT[k]||((EX[k]&&EX[k].n)||k)+" technique tutorial";
+  return "https://www.youtube.com/results?search_query="+encodeURIComponent(q);
+}
 
 const LEVELS=["Rookie","Rookie","Apprentice","Apprentice","Grinder","Grinder","Iron","Iron","Steel","Steel","Forged"];
 const XP_PER=100;
 
 const DEF={
-  sessions:[], active:null, cycleIdx:0, xp:0, seenBadges:[],
+  sessions:[], active:null, cycleIdx:0, xp:0, seenBadges:[], histEx:null,
   unlocked:{swing:false,clean:false,getup:false},
-  settings:{name:"Orlando",sound:true}
+  claimed:[],
+  settings:{name:"Orlando",sound:true,scoreOutOf10:false,videos:{},quotes:[],rewards:[
+    {at:5,  n:"You pick the finisher for a whole week"},
+    {at:12, n:"You choose what we do on a Saturday"},
+    {at:24, n:"The 20 kg bell \u2014 your own, with your name on it"}
+  ]}
 };
 
-function load(){
+/* ================= SET MODEL =================
+   A set is {r:reps|seconds, b:bell kg or null, f:"easy"|"ok"|"hard", n:1-10 or null}.
+   Sessions logged before 24 Aug 2026 stored sets as bare numbers with one rating for the
+   whole exercise; migrate() lifts those into the new shape so history stays continuous. */
+const sR=v=>(v&&typeof v==="object")?(v.r??null):(typeof v==="number"?v:null);
+const sB=v=>(v&&typeof v==="object")?(v.b??null):null;
+const sF=v=>(v&&typeof v==="object")?(v.f??null):null;
+const sN=v=>(v&&typeof v==="object")?(v.n??null):null;
+const hasR=v=>sR(v)!=null;
+
+function migrateEntry(e){
+  if(!e||typeof e!=="object") return e;
+  if(!Array.isArray(e.sets)){ e.sets=[]; return e; }
+  e.sets=e.sets.map(v=>(v&&typeof v==="object")?v
+    :{r:(typeof v==="number"?v:null), b:e.bell??null, f:e.fb??null, n:null});
+  return e;
+}
+function migrate(o){
+  (o.sessions||[]).forEach(ss=>(ss&&ss.entries||[]).forEach(migrateEntry));
+  if(o.active&&Array.isArray(o.active.entries)) o.active.entries.forEach(migrateEntry);
+  return o;
+}
+/* One rating for the exercise, derived from its sets. Any hard set holds the weight;
+   all-easy moves fastest. Conservative on purpose - this drives the load progression. */
+function entFb(ent){
+  const fs=(ent.sets||[]).map(sF).filter(Boolean);
+  if(!fs.length) return null;
+  if(fs.includes("hard")) return "hard";
+  if(fs.every(f=>f==="easy")) return "easy";
+  return "ok";
+}
+function entBell(ent){
+  const bs=(ent.sets||[]).map(sB).filter(v=>v!=null);
+  return bs.length?Math.max(...bs):(ent.bell??null);
+}
+/* 1-10 mode maps onto the same three buckets the progression engine already speaks. */
+function nToF(n){ return n>=9?"easy" : n>=6?"ok" : "hard"; }
+
+function load0(){
   try{ const raw=canLS?localStorage.getItem(KEY):MEM;
     if(!raw) return structuredClone(DEF);
     const o=JSON.parse(raw);
     return {...DEF,...o,
-      settings:{...DEF.settings,...(o.settings||{})},
+      sessions:Array.isArray(o.sessions)?o.sessions.filter(x=>x&&typeof x.date==="string"):[],
+      claimed:Array.isArray(o.claimed)?o.claimed:[],
+      settings:{...DEF.settings,...(o.settings||{}),
+        quotes:Array.isArray(o.settings&&o.settings.quotes)?o.settings.quotes.filter(x=>typeof x==="string"):[],
+        videos:(o.settings&&o.settings.videos&&typeof o.settings.videos==="object"&&!Array.isArray(o.settings.videos))?o.settings.videos:{},
+        scoreOutOf10:!!(o.settings&&o.settings.scoreOutOf10),
+        rewards:Array.isArray(o.settings&&o.settings.rewards)?o.settings.rewards:DEF.settings.rewards},
       unlocked:{...DEF.unlocked,...(o.unlocked||{})}};
   }catch(e){ return structuredClone(DEF) }
 }
-let S=load();
+function loadMigrated(){ try{ return migrate(load0()) }catch(e){ return structuredClone(DEF) } }
+let S=loadMigrated();
 function save(){ const j=JSON.stringify(S); if(canLS){try{localStorage.setItem(KEY,j)}catch(e){MEM=j}} else MEM=j; }
 
 const $=s=>document.querySelector(s);
-const today=()=>new Date().toISOString().slice(0,10);
+const dkey=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const today=()=>dkey(new Date());
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const lvl=()=>Math.min(LEVELS.length,Math.floor(S.xp/XP_PER)+1);
 const lvlName=()=>LEVELS[Math.min(LEVELS.length-1,lvl()-1)];
@@ -307,15 +546,16 @@ function recommend(xk){
     why: !useBell
        ? `Start at ${x.lo}${x.t==="time"?" seconds":""}. Add more once they all look clean.`
        : `Start on the ${BELLS[startB]} kg. If it flies up, go heavier next time - not today.`};
-  const hitTop = last.sets.every(v=>v!=null && v>=x.hi);
+  const hitTop = last.sets.length>0 && last.sets.every(v=>hasR(v) && sR(v)>=x.hi);
   const bi = last.bell==null ? null : BELLS.indexOf(last.bell);
   const canUp = bi!=null && bi<BELLS.length-1;
 
-  if(last.fb==="hard"){
+  const lfb = last.fb ?? entFb(last);
+  if(lfb==="hard"){
     const r=Math.max(x.lo,(last.target??x.lo)-1);
     return {bell:last.bell, reps:r, why:`Last time was too hard. Same weight, ${r} reps. Nail it before it moves again.`};
   }
-  if(hitTop && (last.fb==="easy"||last.fb==="ok")){
+  if(hitTop && (lfb==="easy"||lfb==="ok")){
     if(canUp) return {bell:BELLS[bi+1], reps:x.lo, up:true,
       why:`You owned ${x.hi} on the ${last.bell} kg. Move up to the ${BELLS[bi+1]} kg and start again at ${x.lo}.`};
     const r=(last.target??x.hi)+1;
@@ -324,11 +564,11 @@ function recommend(xk){
         ? `You've run out of bell - keep adding reps, ${r} this time. Next step up: ${x.grad}.`
         : `Top bell already. Keep adding a rep - ${r} this time.`};
   }
-  const step = last.fb==="easy"?2:1;
+  const step = lfb==="easy"?2:1;
   const r=Math.min(x.hi,(last.target??x.lo)+step);
   return {bell:last.bell, reps:r,
     why: r>(last.target??x.lo)
-      ? `${last.fb==="easy"?"Felt easy":"Good"} last time - go for ${r}${x.t==="time"?" seconds":" reps"}.`
+      ? `${lfb==="easy"?"Felt easy":"Good"} last time - go for ${r}${x.t==="time"?" seconds":" reps"}.`
       : `Hold at ${r}${x.t==="time"?" seconds":" reps"} until every set is clean.`};
 }
 
@@ -358,10 +598,102 @@ function render(){
   if(VIEW==="coach") return vCoach(A);
 }
 
-function weekCount(){
-  const now=new Date(), start=new Date(now); start.setDate(now.getDate()-now.getDay());
-  start.setHours(0,0,0,0);
-  return S.sessions.filter(s=>new Date(s.date)>=start).length;
+/* ================= WEEK CALENDAR + REWARD BANK =================
+   Target is 3 sessions/week (NSCA dose for his age, non-consecutive days).
+   4 is a bonus tier, not the goal. 2 still banks a point - a bad week is
+   never worth zero, or the rest of the week gets written off. */
+const WK_TARGET=3, WK_BONUS=4;
+const DAYL=["M","T","W","T","F","S","S"];
+
+function weekStart(d){ const x=new Date(d); x.setHours(0,0,0,0);
+  x.setDate(x.getDate()-((x.getDay()+6)%7)); return x; }          // Monday start
+function sessionsByDay(){ const m={};
+  S.sessions.forEach(s=>{ (m[s.date]=m[s.date]||[]).push(s) }); return m; }
+function weekPoints(n){ return n>=WK_BONUS?3 : n>=WK_TARGET?2 : n>=2?1 : 0; }
+function weekCount(){ const st=weekStart(new Date()), byD=sessionsByDay(); let n=0;
+  for(let i=0;i<7;i++){ const d=new Date(st); d.setDate(st.getDate()+i); n+=(byD[dkey(d)]||[]).length } return n; }
+
+function allWeeks(){
+  if(!S.sessions.length) return [];
+  const byD=sessionsByDay(), ds=Object.keys(byD).sort()
+    .filter(k=>!isNaN(new Date(k+"T12:00:00")));
+  if(!ds.length) return [];
+  let cur=weekStart(new Date(ds[0]+"T12:00:00"));
+  const end=weekStart(new Date()), out=[];
+  while(cur<=end && out.length<400){
+    const days=[]; let n=0;
+    for(let i=0;i<7;i++){ const d=new Date(cur); d.setDate(cur.getDate()+i);
+      const c=(byD[dkey(d)]||[]).length; n+=c; days.push(c); }
+    out.push({start:new Date(cur),days,n,pts:weekPoints(n)});
+    const nx=new Date(cur); nx.setDate(cur.getDate()+7); cur=nx;
+  }
+  return out;
+}
+const totalPoints=()=>allWeeks().reduce((a,w)=>a+w.pts,0);
+const prizes=()=>(S.settings.rewards||[]).slice().sort((a,b)=>a.at-b.at);
+function trainedYesterday(){ const y=new Date(); y.setDate(y.getDate()-1);
+  return S.sessions.some(s=>s.date===dkey(y)); }
+
+function weekCard(){
+  const st=weekStart(new Date()), byD=sessionsByDay(), tk=today();
+  let n=0, cells="";
+  for(let i=0;i<7;i++){
+    const d=new Date(st); d.setDate(st.getDate()+i);
+    const k=dkey(d), got=byD[k]||[], isT=k===tk, fut=k>tk;
+    n+=got.length;
+    const lab=got.length?got.map(x=>x.k).join(""):(isT?"\u00b7":"");
+    cells+=`<div class="wd"><div class="dn">${DAYL[i]}</div><div class="db ${got.length?"on":""} ${isT?"td":""} ${fut&&!got.length?"fut":""}">${lab}</div></div>`;
+  }
+  const pts=weekPoints(n);
+  const msg = n>=WK_BONUS ? `Big week. ${pts} points banked \u2014 the most there is.`
+    : n>=WK_TARGET ? `Target hit, ${pts} points. One more makes it a big week (3 points).`
+    : n===2 ? `1 point banked. One more session this week gets you to target.`
+    : n===1 ? `One down. Two more hits target.`
+    : trainedYesterday() ? `You trained yesterday. Rest today \u2014 that's when you get stronger.`
+    : `Three sessions this week, with a day off between each.`;
+  const rest = n>0 && trainedYesterday() && n<WK_BONUS
+    ? `<div class="tiny" style="margin-top:6px;color:var(--a)">You trained yesterday \u2014 today is a rest day.</div>` : "";
+  return `<div class="card">
+    <div class="row" style="margin-bottom:11px">
+      <div class="lbl" style="margin:0">This week</div>
+      <div style="font-weight:850;font-size:15px">${n}<span style="color:var(--dim);font-size:12px">/${WK_TARGET}</span>
+        <span class="pill ${pts>=3?"g":pts>0?"n":""}" style="margin-left:7px">+${pts} pt${pts===1?"":"s"}</span></div>
+    </div>
+    <div class="wk">${cells}</div>
+    <div class="tiny" style="margin-top:11px">${msg}</div>${rest}
+  </div>`;
+}
+
+function rewardCard(){
+  const P=totalPoints(), ps=prizes();
+  if(!ps.length) return "";
+  const next=ps.find(p=>p.at>P), prev=ps.filter(p=>p.at<=P).pop();
+  const from=prev?prev.at:0;
+  const pct=next?Math.max(0,Math.min(100,((P-from)/(next.at-from))*100)):100;
+  return `<div class="card">
+    <div class="row"><div>
+      <div class="lbl" style="margin:0">Reward bank</div>
+      <div class="tiny" style="margin-top:5px">${next?`${next.at-P} point${next.at-P===1?"":"s"} to go`:"Every reward unlocked."}</div>
+    </div><div class="big" style="color:var(--acc)">${P}</div></div>
+    <div class="pbar"><i style="width:${pct}%"></i></div>
+    ${next?`<div style="margin-top:11px;font-size:14.5px;font-weight:750">Next up: ${esc(next.n)}</div>`:""}
+    <div class="tiny" style="margin-top:9px">4 sessions = 3 points \u00b7 3 = 2 points \u00b7 2 = 1 point. Points never reset.</div>
+  </div>`;
+}
+
+function weeksCard(limit){
+  const ws=allWeeks().slice(-limit).reverse();
+  if(!ws.length) return "";
+  let h=`<div class="card"><div class="lbl">Your weeks</div>`;
+  ws.forEach((w,i)=>{
+    const lab=i===0?"This week":w.start.toLocaleDateString(undefined,{day:"numeric",month:"short"});
+    h+=`<div style="display:flex;gap:11px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)">
+      <span class="tiny" style="width:64px;flex:0 0 64px">${lab}</span>
+      <div class="mini">${w.days.map(c=>`<i class="${c?"on":""}"></i>`).join("")}</div>
+      <span class="pill ${w.pts>=3?"g":w.pts>0?"n":""}" style="flex:0 0 auto">${w.n}\u00d7 \u00b7 ${w.pts}p</span></div>`;
+  });
+  h+=`<div class="tiny" style="margin-top:10px">Each row is one week, Monday to Sunday. A lit square is a session done.</div></div>`;
+  return h;
 }
 
 function vToday(A){
@@ -370,7 +702,8 @@ function vToday(A){
   $("#sub").textContent=S.sessions.length?`${S.sessions.length} sessions done`:"Let's go";
   const wc=weekCount();
   const xpIn=S.xp%XP_PER;
-  let h=`<div class="card">
+  let h=quoteCard();
+  h+=`<div class="card">
     <div class="row"><div>
       <div class="lbl" style="margin:0">Level ${lvl()} &middot; ${lvlName()}</div>
       <div style="font-size:12.5px;color:var(--dim);margin-top:5px">${XP_PER-xpIn} XP to level ${lvl()+1}</div>
@@ -378,13 +711,8 @@ function vToday(A){
     <div class="xpwrap"><div class="xpbar" style="width:${xpIn}%"></div></div>
   </div>`;
 
-  h+=`<div class="card"><div class="lbl">This week</div>
-    <div class="row"><div class="big">${wc}<span style="font-size:15px;color:var(--dim)">/3</span></div>
-    <div style="display:flex;gap:6px">${[0,1,2].map(i=>`<div style="width:30px;height:30px;border-radius:9px;
-      background:${i<wc?"var(--acc)":"var(--card2)"};border:1px solid ${i<wc?"var(--acc)":"var(--line)"}"></div>`).join("")}</div></div>
-    <div class="tiny" style="margin-top:10px">${wc>=3?"Target hit. Anything extra is a bonus.":
-      wc===0?"Three sessions this week, with a rest day between each.":"Keep a day's gap between sessions - that's when you actually get stronger."}</div>
-  </div>`;
+  h+=weekCard();
+  h+=rewardCard();
 
   h+=`<div class="card">
     <div class="lbl">Next up</div>
@@ -414,7 +742,8 @@ function startSession(){
     entries:s.ex.map(k=>{ const r=resolve(k);
       const rec=recommend(r.key);
       return {x:r.key, lockedFrom:r.locked?r.orig:null, bell:rec.bell, target:rec.reps,
-              sets:new Array(EX[r.key].s).fill(null), fb:null}; }),
+              sets:Array.from({length:EX[r.key].s},()=>({r:null,b:rec.bell??null,f:null,n:null})),
+              fb:null}; }),
     fin:null};
   save(); render();
 }
@@ -422,12 +751,12 @@ function startSession(){
 function vSession(A){
   const a=S.active;
   $("#ttl").textContent=a.n;
-  const total=a.entries.length, done=a.entries.filter(e=>e.fb).length;
+  const total=a.entries.length, done=a.entries.filter(e=>entFb(e)).length;
   $("#sub").textContent=`${done}/${total} exercises`;
   let h="";
   a.entries.forEach((ent,ei)=>{
     const x=EX[ent.x], rec=recommend(ent.x);
-    const isDone=!!ent.fb;
+    const isDone=(ent.sets||[]).length>0 && ent.sets.every(v=>sF(v));
     h+=`<div class="ex ${isDone?"done":""}">
       <div class="row" style="align-items:flex-start">
         <div style="flex:1"><div class="exn">${esc(x.n)}${x.arm?' <span class="tiny">each side</span>':""}</div>
@@ -439,19 +768,26 @@ function vSession(A){
     if(hasBell(x)){
       h+=`<div class="bells">${BELLS.map((b,i)=>`<button class="bell ${ent.bell===b?"on":""} ${ent.bell!==b&&rec.bell===b?"rec":""}"
         onclick="setBell(${ei},${b})">${b}</button>`).join("")}</div>
-        <div class="tiny">kg &middot; tap to change</div>`;
+        <div class="tiny">kg &middot; tap to set every set at once, or change a single set below</div>`;
     }
-    h+=`<div class="reps">${ent.sets.map((v,si)=>`<div class="repbox">
-      <label>SET ${si+1}</label>
-      <input id="s-${ei}-${si}" type="number" inputmode="numeric" class="${v!=null?"filled":""}"
-        placeholder="${ent.target}" value="${v??""}" oninput="onRep(this,${ei},${si})">
-    </div>`).join("")}</div>`;
-    h+=`<div class="faces">
-      ${[["easy","😃","Easy"],["ok","😤","Just right"],["hard","🥵","Too hard"]].map(([k,i,t])=>
-        `<button class="face ${k} ${ent.fb===k?"on":""}" onclick="setFb(${ei},'${k}')">
-          <div class="fi">${i}</div><div class="ft">${t}</div></button>`).join("")}
-    </div>`;
+    const unit = x.t==="time"?"sec":"reps";
+    const useNum = !!S.settings.scoreOutOf10;
+    h+=`<div class="tiny" style="margin:11px 0 2px">Log every set on its own \u00b7 ${unit}${hasBell(x)?" and the bell you used":""}</div>`;
+    ent.sets.forEach((v,si)=>{
+      h+=`<div class="setrow"><span class="setn">SET ${si+1}</span>`;
+      if(hasBell(x)) h+=`<select class="setbell" onchange="setSetBell(${ei},${si},this.value)">
+        ${BELLS.map(b=>`<option value="${b}" ${sB(v)===b?"selected":""}>${b} kg</option>`).join("")}</select>`;
+      h+=`<input id="s-${ei}-${si}" type="number" inputmode="numeric" class="setrep ${hasR(v)?"filled":""}"
+        placeholder="${ent.target}" value="${sR(v)??""}" oninput="onRep(this,${ei},${si})">`;
+      if(!useNum) h+=`<div class="sf">${[["easy","\ud83d\ude03"],["ok","\ud83d\ude24"],["hard","\ud83e\udd75"]].map(([k,ic])=>
+        `<button class="sfb ${k} ${sF(v)===k?"on":""}" title="${k}" onclick="setSetFb(${ei},${si},'${k}')">${ic}</button>`).join("")}</div>`;
+      h+=`</div>`;
+      if(useNum) h+=`<div class="n10">${[1,2,3,4,5,6,7,8,9,10].map(n=>
+        `<button class="${sN(v)===n?"on":""}" onclick="setSetNum(${ei},${si},${n})">${n}</button>`).join("")}</div>`;
+    });
+    if(useNum) h+=`<div class="tiny" style="margin-top:2px">How well did that set go? 10 = every rep controlled. Under 6 holds the weight.</div>`;
     h+=`<div class="cue">${esc(x.cue)}</div>`;
+    h+=`<a class="ytl" href="${esc(ytLink(ent.x))}" target="_blank" rel="noopener noreferrer">\u25b6 How to do it</a>`;
     h+=`<div class="hint">${esc(rec.why)}</div>`;
     h+=`</div>`;
   });
@@ -473,14 +809,32 @@ function vSession(A){
   A.innerHTML=h;
 }
 
-function setBell(ei,b){ S.active.entries[ei].bell=b; save(); vSession($("#app")); }
+function setBell(ei,b){ const e=S.active.entries[ei];
+  e.bell=b; e.sets=e.sets.map(v=>({...v,b})); save(); vSession($("#app")); }
+function setSetBell(ei,si,b){ const e=S.active.entries[ei];
+  e.sets[si]={...e.sets[si],b:parseInt(b,10)}; save(); }
+function setSetFb(ei,si,k){ const e=S.active.entries[ei], cur=e.sets[si];
+  const on = sF(cur)===k ? null : k;
+  e.sets[si]={...cur,f:on};
+  if(on && sR(cur)==null) e.sets[si].r=e.target;   // rating a set means it happened
+  save(); vSession($("#app"));
+  if(on) startRest(EX[e.x].rest);
+}
+function setSetNum(ei,si,n){ const e=S.active.entries[ei], cur=e.sets[si];
+  const on = sN(cur)===n ? null : n;
+  e.sets[si]={...cur,n:on,f:on?nToF(on):null};
+  if(on && sR(cur)==null) e.sets[si].r=e.target;
+  save(); vSession($("#app"));
+  if(on) startRest(EX[e.x].rest);
+}
 let advT=null;
 function onRep(el,ei,si){
   if(advT) clearTimeout(advT);
   const raw=el.value.trim();
   const ent=S.active.entries[ei];
-  ent.sets[si]= raw===""?null:parseInt(raw,10);
-  if(isNaN(ent.sets[si])) ent.sets[si]=null;
+  let r = raw===""?null:parseInt(raw,10);
+  if(isNaN(r)) r=null;
+  ent.sets[si]={...ent.sets[si], r};
   el.classList.toggle("filled",raw!=="");
   save();
   if(raw==="") return;
@@ -488,23 +842,15 @@ function onRep(el,ei,si){
     const nxt=document.getElementById(`s-${ei}-${si+1}`);
     if(nxt){ nxt.focus(); nxt.select&&nxt.select(); return }
     el.blur();
-    const x=EX[ent.x];
-    if(ent.sets.every(v=>v!=null)) startRest(x.rest);
   },900);
 }
-function setFb(ei,k){
-  const ent=S.active.entries[ei];
-  ent.fb = ent.fb===k?null:k;
-  // Feeding back a rating means the sets happened - fill any blanks with the target.
-  if(ent.fb) ent.sets=ent.sets.map(v=>v==null?ent.target:v);
-  save(); vSession($("#app"));
-  if(ent.fb) startRest(EX[ent.x].rest);
-}
+
 function toggleFin(n,xp){ S.active.fin = S.active.fin?null:{n,xp}; save(); vSession($("#app")); }
 
 function finish(){
   const a=S.active;
-  const logged=a.entries.filter(e=>e.fb||e.sets.some(v=>v!=null));
+  a.entries.forEach(e=>{ e.fb=entFb(e); e.bell=entBell(e); });
+  const logged=a.entries.filter(e=>e.fb||e.sets.some(hasR));
   if(!logged.length){ toast("Nothing logged yet"); return }
   let gained = logged.length*10 + 25 + (a.fin?a.fin.xp:0);
   const before=lvl();
@@ -527,6 +873,64 @@ function finish(){
   modal(h); render();
 }
 
+/* ================= EXERCISE HISTORY =================
+   Every session an exercise appears in, newest first, with the bell and reps of each
+   individual set and how each one was rated. This is the progression readout. */
+const FICON={easy:"\ud83d\ude03",ok:"\ud83d\ude24",hard:"\ud83e\udd75"};
+function exHistory(xk){
+  const out=[];
+  S.sessions.forEach(ss=>(ss.entries||[]).forEach(e=>{
+    if(!e||e.x!==xk||!Array.isArray(e.sets)) return;
+    const sets=(e.sets||[]).filter(hasR);
+    if(!sets.length && !entFb(e)) return;
+    out.push({date:ss.date, sn:ss.n, sets:e.sets||[], fb:e.fb??entFb(e)});
+  }));
+  return out.reverse();
+}
+function exDone(){
+  const seen=[]; S.sessions.forEach(ss=>(ss.entries||[]).forEach(e=>{
+    if(e && EX[e.x] && !seen.includes(e.x)) seen.push(e.x); }));
+  return seen;
+}
+/* best set = heaviest bell, then most reps at that bell */
+function bestSet(xk){
+  let b=null;
+  exHistory(xk).forEach(h=>h.sets.forEach(v=>{
+    if(!hasR(v)) return;
+    const sc=(sB(v)||0)*1000+sR(v);
+    if(!b||sc>b.sc) b={bell:sB(v),reps:sR(v),date:h.date,sc};
+  }));
+  return b;
+}
+function setStr(v,t){
+  const r=sR(v); if(r==null) return "-";
+  return (sB(v)!=null?sB(v)+"\u00d7":"")+r+(t==="time"?"s":"");
+}
+function historyCard(){
+  const done=exDone();
+  if(!done.length) return `<div class="card"><div class="lbl">Exercise history</div>
+    <div class="muted" style="font-size:14px">Nothing logged yet. After a session or two this shows every set you've done, so you can see it moving.</div></div>`;
+  const cur = done.includes(S.histEx)?S.histEx:done[0];
+  const x=EX[cur], hs=exHistory(cur), b=bestSet(cur);
+  let h=`<div class="card"><div class="lbl">Exercise history</div>
+    <select onchange="S.histEx=this.value;vProg($('#app'))"
+      style="width:100%;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:12px;
+      color:var(--txt);font-family:inherit;font-size:15px;font-weight:750;-webkit-appearance:none">
+      ${done.map(k=>`<option value="${k}" ${k===cur?"selected":""}>${esc(EX[k].n)}</option>`).join("")}
+    </select>`;
+  if(b) h+=`<div class="row" style="margin-top:13px">
+    <span class="tiny">Best set so far</span>
+    <span style="font-weight:850;font-size:16px;color:var(--acc)">${b.bell!=null?b.bell+" kg \u00d7 ":""}${b.reps}${x.t==="time"?"s":""}</span></div>`;
+  h+=`<div style="margin-top:9px">`;
+  hs.slice(0,20).forEach(r=>{
+    h+=`<div class="hrow2"><span class="tiny" style="width:74px;flex:0 0 74px">${esc(r.date)}</span>
+      <span class="hsets" style="flex:1">${r.sets.map(v=>esc(setStr(v,x.t))).join("  \u00b7  ")}</span>
+      <span style="font-size:13px">${r.sets.map(v=>FICON[sF(v)]||"").join("")}</span></div>`;
+  });
+  h+=`</div><div class="tiny" style="margin-top:10px">Newest first. Each entry is one set: ${x.t==="time"?"bell \u00d7 seconds":"bell \u00d7 reps"}${hs.length>20?", last 20 sessions":""}.</div></div>`;
+  return h;
+}
+
 function vProg(A){
   $("#ttl").textContent="Progress";
   $("#sub").textContent=`Level ${lvl()} \u00b7 ${S.xp} XP`;
@@ -537,15 +941,16 @@ function vProg(A){
 
   // best per exercise
   const seen={};
-  S.sessions.forEach(s=>s.entries.forEach(e=>{
-    const best=Math.max(...e.sets.filter(v=>v!=null),0);
+  S.sessions.forEach(s=>(s.entries||[]).forEach(e=>{
+    if(!e||!EX[e.x]||!Array.isArray(e.sets)) return;
+    const best=Math.max(...e.sets.map(sR).filter(v=>v!=null),0);
     const score=(e.bell||1)*1000+best;
     if(!seen[e.x]||score>seen[e.x].score) seen[e.x]={bell:e.bell,reps:best,score,date:s.date};
   }));
   const ks=Object.keys(seen);
   if(ks.length){
     h+=`<div class="card"><div class="lbl">Personal bests</div>`;
-    ks.forEach(k=>{ const b=seen[k], x=EX[k];
+    ks.forEach(k=>{ const b=seen[k], x=EX[k]; if(!x) return;
       h+=`<div class="row" style="padding:9px 0;border-bottom:1px solid var(--line)">
         <span style="font-size:14px">${esc(x.n)}</span>
         <span style="font-weight:850">${b.bell?b.bell+" kg × ":""}${b.reps}${x.t==="time"?"s":""}</span></div>`;
@@ -553,9 +958,12 @@ function vProg(A){
     h+=`</div>`;
   }
 
+  h+=historyCard();
+  h+=weeksCard(8);
+
   h+=`<div class="card"><div class="lbl">Bell rack</div>
     <div style="display:flex;gap:7px">${BELLS.map(b=>{
-      const used=S.sessions.some(s=>s.entries.some(e=>e.bell>=b));
+      const used=S.sessions.some(s=>(s.entries||[]).some(e=>e&&(e.bell??entBell(e))>=b));
       return `<div style="flex:1;text-align:center;padding:13px 3px;border-radius:12px;
         background:${used?"#16210C":"var(--card2)"};border:1px solid ${used?"var(--acc)":"var(--line)"};
         color:${used?"var(--acc)":"var(--faint)"};font-weight:850">${b}</div>`}).join("")}</div>
@@ -564,7 +972,7 @@ function vProg(A){
   if(S.sessions.length){
     h+=`<div class="card"><div class="lbl">Recent sessions</div>`;
     S.sessions.slice(-12).reverse().forEach(s=>{
-      const faces=s.entries.map(e=>e.fb==="easy"?"😃":e.fb==="ok"?"😤":e.fb==="hard"?"🥵":"·").join(" ");
+      const faces=(s.entries||[]).map(e=>FICON[e.fb??entFb(e)]||"\u00b7").join(" ");
       h+=`<div style="padding:10px 0;border-bottom:1px solid var(--line)">
         <div class="row"><span style="font-weight:700">${esc(s.n)}</span>
         <span class="tiny">${s.date}</span></div>
@@ -612,6 +1020,63 @@ function vCoach(A){
       <div class="tiny">${S.unlocked[k]?"In the program":"Running the safe swap instead"}</div></div></div>`;
   });
   h+=`</div>`;
+
+  h+=`<div class="card"><div class="lbl">Reward ladder</div>
+    <div class="tiny" style="margin-bottom:9px">He banks points weekly: <b>4 sessions = 3, 3 = 2, 2 = 1.</b>
+    Points never reset. Edit the prizes to whatever actually motivates him.</div>`;
+  prizes().forEach((p,i)=>{ const won=totalPoints()>=p.at;
+    h+=`<div class="prz ${won?"won":""}">
+      <div class="pd">${p.at}p</div>
+      <input value="${esc(p.n)}" onchange="setPrize(${i},this.value)"
+        style="flex:1;min-width:0;background:var(--card2);border:1px solid var(--line);border-radius:10px;
+        padding:10px;color:var(--txt);font-family:inherit;font-size:13.5px">
+      <span class="pill ${won?"g":""}" style="flex:0 0 auto">${won?"earned":"locked"}</span></div>`; });
+  h+=`<div class="tiny" style="margin-top:11px">Target stays 3 a week \u2014 that's the evidence-backed dose for his age
+    on non-consecutive days. The 4th day pays more but is framed as a bonus, not the goal, and the app tells him to rest
+    if he trained yesterday. A 2-session week still banks a point on purpose: a sick or exam week that pays nothing
+    teaches him the week is already lost.</div></div>`;
+
+  h+=`<div class="card"><div class="lbl">Setup</div>
+    <div class="tiny" style="margin-bottom:8px">His name is used in the quote of the day - any line containing
+    <b>{name}</b> gets it filled in.</div>
+    <input value="${esc(S.settings.name||"")}" onchange="setName(this.value)" placeholder="Orlando"
+      style="width:100%;background:var(--card2);border:1px solid var(--line);border-radius:11px;padding:12px;
+      color:var(--txt);font-family:inherit;font-size:14.5px">
+    <div class="sw" style="margin-top:14px"><input type="checkbox" ${S.settings.scoreOutOf10?"checked":""}
+      onchange="setScoreMode(this.checked)">
+      <div><div style="font-weight:700;font-size:14.5px">Rate sets out of 10</div>
+      <div class="tiny">Off (recommended): three faces per set - Easy / Just right / Too hard. On: a 1-10 score per set,
+      which maps to the same three buckets underneath (9-10 easy, 6-8 just right, 5 or under holds the weight).
+      The faces are the safer input at his age - he has never lifted, so he can't reliably tell a 7 from an 8, and
+      the rep progression runs off whichever one you pick.</div></div></div></div>`;
+
+  h+=`<div class="card"><div class="lbl">Technique videos</div>
+    <div class="tiny" style="margin-bottom:10px">Every exercise has a <b>How to do it</b> link in the session.
+    By default it opens a YouTube <i>search</i> for that movement - no video ID is hardcoded, because a guessed or
+    dead link is worse than none. Paste a specific video you have watched and it is used instead.</div>`;
+  Object.keys(EX).forEach(k=>{
+    const cu=(S.settings.videos||{})[k]||"";
+    h+=`<div style="padding:8px 0;border-bottom:1px solid var(--line)">
+      <div class="row"><span style="font-size:13.5px;font-weight:700">${esc(EX[k].n)}</span>
+      <a href="${esc(ytLink(k))}" target="_blank" rel="noopener noreferrer" class="tiny"
+        style="color:var(--acc2);font-weight:800;text-decoration:none">${cu?"yours":"search"} \u2197</a></div>
+      <input value="${esc(cu)}" placeholder="paste a YouTube link" onchange="setVideo('${k}',this.value)"
+        style="width:100%;margin-top:6px;background:var(--card2);border:1px solid var(--line);border-radius:9px;
+        padding:9px;color:var(--txt);font-family:inherit;font-size:12px"></div>`;
+  });
+  h+=`</div>`;
+
+  h+=`<div class="card"><div class="lbl">Your own lines</div>
+    <div class="tiny" style="margin-bottom:9px">One per line. Yours get used before the ${QUOTES.length} built-in ones,
+    and they alternate with the ${QUOTES.length} built-in ones - even days yours, odd days mine. Write one and he still
+    sees it every other day. A line from you will land harder than a line from an app.</div>
+    <textarea id="qbox" rows="5" placeholder="Grandad could do this at your age.&#10;You said you'd do it. So do it."
+      style="width:100%;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:12px;
+      color:var(--txt);font-family:inherit;font-size:13.5px;line-height:1.5;resize:vertical"
+      >${esc((S.settings.quotes||[]).join("\n"))}</textarea>
+    <div style="height:9px"></div>
+    <button class="btn sec" onclick="saveQuotes()">Save lines</button>
+    <div class="tiny" style="margin-top:10px">Today he's seeing: \u201c${esc(quoteOfDay())}\u201d</div></div>`;
 
   h+=`<div class="card"><div class="lbl">How the progression works</div>
     <div class="muted" style="font-size:13px;line-height:1.6">
@@ -675,6 +1140,19 @@ function vCoach(A){
   </div>`;
   A.innerHTML=h;
 }
+function setName(v){ S.settings.name=String(v||"").trim(); save(); toast("Saved"); render(); }
+function setScoreMode(v){ S.settings.scoreOutOf10=!!v; save();
+  toast(v?"Sets rated out of 10":"Sets rated with faces"); render(); }
+function setVideo(k,v){ S.settings.videos={...(S.settings.videos||{})};
+  const t=String(v||"").trim();
+  if(t) S.settings.videos[k]=t; else delete S.settings.videos[k];
+  save(); toast(t?"Video saved":"Back to search"); render(); }
+function saveQuotes(){
+  const v=$("#qbox").value.split("\n").map(x=>x.trim()).filter(Boolean);
+  S.settings.quotes=v; save(); toast(v.length?v.length+" line"+(v.length>1?"s":"")+" saved":"Using the built-in lines");
+  render();
+}
+function setPrize(i,v){ const ps=prizes(); if(!ps[i])return; ps[i].n=v; S.settings.rewards=ps; save(); toast("Saved"); }
 function unlock(k,v){
   S.unlocked[k]=v; save();
   toast(v?SKILLS[k].n+" unlocked":SKILLS[k].n+" locked");
@@ -682,7 +1160,10 @@ function unlock(k,v){
 }
 function copyLog(){
   const j=JSON.stringify({app:"FORGE",exported:new Date().toISOString(),xp:S.xp,level:lvl(),
-    unlocked:S.unlocked,sessions:S.sessions},null,1);
+    unlocked:S.unlocked,points:totalPoints(),
+    weeks:allWeeks().map(w=>({start:dkey(w.start),n:w.n,pts:w.pts})),
+    scoreMode:S.settings.scoreOutOf10?"1-10":"faces",
+    sessions:S.sessions},null,1);
   const ta=document.createElement("textarea"); ta.value=j; ta.style.position="fixed"; ta.style.opacity="0";
   document.body.appendChild(ta); ta.select();
   try{ document.execCommand("copy"); toast("Copied") }catch(e){ toast("Copy failed") }
