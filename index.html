@@ -166,6 +166,16 @@ nav svg{width:23px;height:23px;display:block;margin:0 auto 3px;stroke:currentCol
 .sw input{width:22px;height:22px;accent-color:var(--acc);flex:none}
 textarea{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:12px;
   color:var(--txt);padding:12px;font-family:inherit;font-size:14px;min-height:90px}
+.duelcard{background:linear-gradient(150deg,#241435,#141020);border-color:#4A2D63}
+.duelrow{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:6px}
+.duelside{text-align:center;flex:1;opacity:.55}
+.duelside.win{opacity:1}
+.duelnum{font-size:44px;font-weight:900;line-height:1;letter-spacing:-2px}
+.duelside.win .duelnum{color:var(--p)}
+.duelname{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;margin-top:4px;color:var(--dim)}
+.dueldash{font-size:24px;color:var(--faint);font-weight:800}
+.wildtag{display:inline-block;background:var(--p);color:#1A0B29;font-size:9.5px;font-weight:900;
+  letter-spacing:.8px;padding:2px 6px;border-radius:5px;vertical-align:2px;margin-right:2px}
 .fin{background:linear-gradient(135deg,#1A2740,#141C2E);border:1px solid #2A3C5C}
 </style>
 </head>
@@ -186,11 +196,11 @@ let canLS=true; try{localStorage.setItem("__t","1");localStorage.removeItem("__t
 let MEM=null;
 
 /* ================= BELLS =================
-   Fixed jumps: 4 6 8 10 12 16 kg. From 4 to 6 is +50%; 12 to 16 is +33%. The youth-training
+   Fixed jumps: 4 6 8 10 12 16 20 kg. From 4 to 6 is +50%; 16 to 20 is +25%. The youth-training
    guidance is to progress load by 5-10%. With these bells that is arithmetically impossible,
    so load is NOT the progression variable here. Reps are. The bell only moves once the top of
    the rep range is owned across every set — then reps reset to the bottom of the range.       */
-const BELLS=[4,6,8,10,12,16];
+const BELLS=[4,6,8,10,12,16,20];
 
 /* ================= EXERCISES =================
    type: "bell" = loaded reps | "body" = bodyweight reps | "time" = seconds (bell optional)
@@ -228,6 +238,36 @@ const EX={
   tkpress:{n:"Tall-Kneeling Press",t:"bell",s:2,lo:8,hi:12,b:1,rest:60,arm:true,
     cue:"Both knees down, bum squeezed. Takes the legs out of it so the shoulder does all the work."},
 
+  /* --- variant swaps: same pattern, different exercise, so no two Push Days are identical --- */
+  inclinepush:{n:"Incline Push-up",t:"body",s:3,lo:8,hi:15,rest:60,
+    cue:"Hands on a bench or step. Easier than the floor, so chase more reps. Body still dead straight."},
+  closepress:{n:"Close-Grip Floor Press",t:"bell",s:3,lo:8,hi:12,b:2,rest:75,
+    cue:"Both hands on one bell, elbows tucked tight to your ribs. Hammers the triceps."},
+  seesaw:{n:"See-Saw Press",t:"bell",s:3,lo:8,hi:10,b:2,rest:75,arm:true,
+    cue:"One bell up while the other comes down. Never both at the top. Keep the ribs down."},
+  gobletcurl:{n:"Crush-Grip Curl",t:"bell",s:3,lo:10,hi:15,b:2,rest:60,
+    cue:"Squeeze the bell between both palms, no handle. Curl slowly. The squeeze is half the work."},
+  pullover:{n:"Floor Pullover",t:"bell",s:3,lo:10,hi:12,b:2,rest:60,
+    cue:"On your back, bell over your chest, reach it back over your head. Stop when your ribs want to flare."},
+
+  /* --- wildcard pool: one genuinely different movement each session --- */
+  figure8:{n:"Figure 8",t:"time",s:3,lo:20,hi:40,b:2,rest:60,bell:true,wild:true,
+    cue:"Stand wide, weave the bell through your legs in a figure 8. Keep your back flat and your head up."},
+  aroundworld:{n:"Around the World",t:"time",s:3,lo:20,hi:40,b:2,rest:60,bell:true,wild:true,
+    cue:"Pass the bell around your waist, hand to hand. Change direction halfway. Don't let your hips wander."},
+  bearcrawl:{n:"Bear Crawl Drag",t:"time",s:3,lo:20,hi:40,b:3,rest:75,bell:true,wild:true,
+    cue:"On hands and toes, knees just off the floor. Drag the bell under you, hand to hand. Hips stay low and still."},
+  waiter:{n:"Waiter Walk",t:"time",s:3,lo:20,hi:40,b:1,rest:60,bell:true,arm:true,wild:true,
+    cue:"One bell locked out overhead, arm by your ear. Walk tall. Looks easy, isn't."},
+  bottomsup:{n:"Bottoms-Up Press",t:"bell",s:3,lo:5,hi:8,b:0,rest:75,arm:true,wild:true,
+    cue:"Bell upside down, handle gripped hard, press without letting it tip. Go light. Pure grip and control."},
+  tksitup:{n:"Turkish Sit-up",t:"bell",s:3,lo:5,hi:8,b:1,rest:60,arm:true,wild:true,
+    cue:"On your back, bell locked overhead. Eyes on the bell, sit up onto your elbow, then your hand. Slow."},
+  suitcasedl:{n:"Suitcase Deadlift",t:"bell",s:3,lo:8,hi:12,b:4,rest:75,arm:true,wild:true,
+    cue:"One bell beside one foot. Lift without leaning sideways. Your abs stop the tilt, not your back."},
+  racksquat1:{n:"Single-Bell Front Squat",t:"bell",s:3,lo:8,hi:12,b:3,rest:75,arm:true,wild:true,
+    cue:"Bell racked on one shoulder only. The lopsided load is the whole point - stay square."},
+
   /* --- locked skills --- */
   swing:{grad:"Single-Arm Swing - same weight, one hand",n:"Two-Hand Swing",t:"bell",s:3,lo:10,hi:15,b:4,rest:90,lock:"swing",sub:"fastdl",
     cue:"This is a HINGE, not a squat, and not a lift with the arms. Snap the hips, the bell floats to chest height."},
@@ -249,11 +289,26 @@ const SKILLS={
 };
 
 /* ================= SESSIONS ================= */
+/* Core lifts stay fixed so progression actually accumulates. One slot per session rotates
+   through a pool of same-pattern variants, and one Wildcard slot draws from the fun pool.
+   That is what stops Push Day being the same five exercises forever without wrecking the
+   numbers he is chasing. */
 const SESS=[
-  {k:"A",n:"Push Day",sub:"Chest, shoulders, core",ex:["goblet","floorpress","press","pushup","hollow"]},
-  {k:"B",n:"Pull Day",sub:"Back, arms, legs",ex:["deadlift","row","curl","lunge","carry"]},
-  {k:"C",n:"Athlete Day",sub:"Power, full body",ex:["swing","racked","floorpress","row","getup","plank"]}
+  {k:"A",n:"Push Day",sub:"Chest, shoulders, core",
+   ex:["goblet","floorpress","press","hollow"],
+   swap:["pushup","inclinepush","closepress","seesaw"]},
+  {k:"B",n:"Pull Day",sub:"Back, arms, legs",
+   ex:["deadlift","row","curl","carry"],
+   swap:["lunge","racksquat1","suitcasedl","pullover"]},
+  {k:"C",n:"Athlete Day",sub:"Power, full body",
+   ex:["swing","racked","row","plank"],
+   swap:["floorpress","getup","closepress","gobletcurl"]}
 ];
+/* Wildcards rotate every single session, so there is always one thing he has not done
+   for a while. Deliberately the showy, awkward, slightly silly ones. */
+const WILDCARDS=["figure8","aroundworld","bearcrawl","waiter","bottomsup","tksitup","suitcasedl","racksquat1"];
+function swapFor(s,cyc){ return s.swap[Math.floor(cyc/3)%s.swap.length]; }
+function wildFor(cyc){ return WILDCARDS[cyc%WILDCARDS.length]; }
 
 /* ================= FINISHERS =================
    The point of these is that they are the bit he tells people about. Optional, bonus XP.      */
@@ -281,6 +336,12 @@ const BADGES=[
       return hit}},
   {k:"twelve",i:"🥉",n:"Used the 12",f:S=>S.sessions.some(s=>s.entries.some(e=>e.bell>=12))},
   {k:"sixteen",i:"🥇",n:"Used the 16",f:S=>S.sessions.some(s=>s.entries.some(e=>e.bell>=16))},
+  {k:"twenty",i:"💎",n:"Used the 20",f:S=>S.sessions.some(s=>s.entries.some(e=>e.bell>=20))},
+  {k:"duel1",i:"⚔️",n:"Beat Dad",f:S=>(S.duels||[]).some(d=>d.w==="O")},
+  {k:"duel5",i:"👑",n:"Beat Dad 5×",f:S=>(S.duels||[]).filter(d=>d.w==="O").length>=5},
+  {k:"wild5",i:"✨",n:"5 Wildcards",f:S=>{
+      const seen=new Set(); S.sessions.forEach(s=>s.entries.forEach(e=>{ if(WILDCARDS.includes(e.x)) seen.add(e.x) }));
+      return seen.size>=5}},
   {k:"fin3",i:"🎲",n:"3 Finishers",f:S=>S.sessions.filter(s=>s.fin).length>=3},
   {k:"week3",i:"📅",n:"3 in a Week",f:S=>{
       const w={}; S.sessions.forEach(s=>{const d=new Date(s.date);
@@ -433,13 +494,13 @@ const LEVELS=["Rookie","Rookie","Apprentice","Apprentice","Grinder","Grinder","I
 const XP_PER=100;
 
 const DEF={
-  sessions:[], active:null, cycleIdx:0, xp:0, seenBadges:[], histEx:null,
+  sessions:[], active:null, cycleIdx:0, xp:0, seenBadges:[], histEx:null, duels:[],
   unlocked:{swing:false,clean:false,getup:false},
   claimed:[],
   settings:{name:"Orlando",sound:true,scoreOutOf10:false,videos:{},quotes:[],rewards:[
     {at:5,  n:"You pick the finisher for a whole week"},
     {at:12, n:"You choose what we do on a Saturday"},
-    {at:24, n:"The 20 kg bell \u2014 your own, with your name on it"}
+    {at:24, n:"Pick any new piece of kit under $100 — your call, no veto"}
   ]}
 };
 
@@ -664,6 +725,56 @@ function weekCard(){
   </div>`;
 }
 
+/* Head-to-head with Dad. Points and badges are extrinsic and they fade - a running score
+   against a person you actually want to beat does not. This is the part most likely to keep
+   a 13-year-old turning up, so it sits above everything else on the Train tab. */
+const DUEL_IDEAS=[
+  "Max plank. Longest hold wins.",
+  "Same bell, most strict presses one arm.",
+  "Farmer's carry, same bells - last one to put them down.",
+  "Most push-ups in 60 seconds.",
+  "Goblet squats with the 16 - most reps.",
+  "Bottoms-up press - most reps without the bell tipping.",
+  "Dead hang for time.",
+  "Bear crawl drag - most lengths in 90 seconds.",
+  "Most swings in 2 minutes, both stopping on form.",
+  "Suitcase carry the heaviest bell - furthest distance."
+];
+function duels(){ return Array.isArray(S.duels)?S.duels:[]; }
+function duelScore(){ const d=duels();
+  return {o:d.filter(x=>x.w==="O").length, d:d.filter(x=>x.w==="D").length, n:d.length}; }
+function duelIdea(){ return DUEL_IDEAS[duels().length%DUEL_IDEAS.length]; }
+function logDuel(w){
+  S.duels=duels().concat([{d:today(),w,what:duelIdea()}]);
+  save(); toast(w==="O"?"Logged — get in":"Logged"); render();
+}
+function undoDuel(){ const d=duels(); d.pop(); S.duels=d; save(); render(); }
+function duelCard(){
+  const sc=duelScore(), lead = sc.o>sc.d ? heroName() : sc.d>sc.o ? "Dad" : null;
+  const last=duels().slice(-1)[0];
+  return `<div class="card duelcard">
+    <div class="lbl" style="color:var(--p)">⚔️ Head to head</div>
+    <div class="duelrow">
+      <div class="duelside ${sc.o>=sc.d?"win":""}"><div class="duelnum">${sc.o}</div><div class="duelname">${esc(heroName())}</div></div>
+      <div class="dueldash">–</div>
+      <div class="duelside ${sc.d>=sc.o?"win":""}"><div class="duelnum">${sc.d}</div><div class="duelname">Dad</div></div>
+    </div>
+    <div class="tiny" style="text-align:center;margin-top:4px">${
+      sc.n===0 ? "No contests yet. First one settles it."
+      : lead ? `${esc(lead)} is ahead by ${Math.abs(sc.o-sc.d)}.` : "Dead level."}</div>
+    <div style="height:13px"></div>
+    <div class="lbl" style="margin:0">Next contest</div>
+    <div style="font-size:14.5px;font-weight:700;margin-top:4px">${esc(duelIdea())}</div>
+    <div style="height:12px"></div>
+    <div class="g2">
+      <button class="btn" style="padding:12px" onclick="logDuel('O')">${esc(heroName())} won</button>
+      <button class="btn sec" style="padding:12px" onclick="logDuel('D')">Dad won</button>
+    </div>
+    ${last?`<div class="tiny" style="margin-top:9px">Last: ${esc(last.what)} — ${last.w==="O"?esc(heroName()):"Dad"} took it.
+      <span style="text-decoration:underline;cursor:pointer" onclick="undoDuel()">undo</span></div>`:""}
+  </div>`;
+}
+
 function rewardCard(){
   const P=totalPoints(), ps=prizes();
   if(!ps.length) return "";
@@ -712,6 +823,7 @@ function vToday(A){
   </div>`;
 
   h+=weekCard();
+  h+=duelCard();
   h+=rewardCard();
 
   h+=`<div class="card">
@@ -719,10 +831,15 @@ function vToday(A){
     <div style="font-size:25px;font-weight:850;letter-spacing:-.6px">${s.n}</div>
     <div class="muted" style="font-size:13.5px;margin-top:3px">${s.sub}</div>
     <div style="margin-top:13px;display:flex;flex-wrap:wrap;gap:6px">
-      ${s.ex.map(k=>{const r=resolve(k);return `<span class="pill ${r.locked?"a":""}">${EX[r.key].n}${r.locked?" 🔒":""}</span>`}).join("")}
+      ${sessionPlan(S.cycleIdx,false).keys.map(k=>{const r=resolve(k);
+        const isW = k===wildFor(S.cycleIdx);
+        return `<span class="pill ${isW?"p":r.locked?"a":""}">${isW?"✨ ":""}${EX[r.key].n}${r.locked?" 🔒":""}</span>`}).join("")}
     </div>
+    <div class="tiny" style="margin-top:9px">✨ Wildcard — changes every session.</div>
     <div style="height:15px"></div>
-    <button class="btn" onclick="startSession()">Start ${esc(s.n)}</button>
+    <button class="btn" onclick="startSession(false)">Start ${esc(s.n)}</button>
+    <div style="height:8px"></div>
+    <button class="btn sec" onclick="startSession(true)">Quick version · about 20 min</button>
   </div>`;
 
   const locked=Object.keys(SKILLS).filter(k=>!S.unlocked[k]);
@@ -736,13 +853,24 @@ function vToday(A){
   A.innerHTML=h;
 }
 
-function startSession(){
-  const s=SESS[S.cycleIdx%3];
-  S.active={k:s.k,n:s.n,date:today(),
-    entries:s.ex.map(k=>{ const r=resolve(k);
+/* Quick = the first three core lifts plus the wildcard, two sets each. About 20 minutes.
+   It exists because "I can't be bothered with a whole session" is the most common reason
+   a session does not happen at all, and a short session beats a skipped one every time. */
+function sessionPlan(cyc, quick){
+  const s=SESS[cyc%3];
+  const core = quick ? s.ex.slice(0,3) : s.ex.slice();
+  const keys = core.concat(quick?[]:[swapFor(s,cyc)]).concat([wildFor(cyc)]);
+  return {s, keys};
+}
+function startSession(quick){
+  const cyc=S.cycleIdx, {s,keys}=sessionPlan(cyc, !!quick);
+  const wild=wildFor(cyc);
+  S.active={k:s.k,n:s.n,date:today(),quick:!!quick,wild,
+    entries:keys.map(k=>{ const r=resolve(k);
       const rec=recommend(r.key);
+      const nSets = quick ? Math.min(2,EX[r.key].s) : EX[r.key].s;
       return {x:r.key, lockedFrom:r.locked?r.orig:null, bell:rec.bell, target:rec.reps,
-              sets:Array.from({length:EX[r.key].s},()=>({r:null,b:rec.bell??null,f:null,n:null})),
+              wild:(k===wild), sets:Array.from({length:nSets},()=>({r:null,b:rec.bell??null,f:null,n:null})),
               fb:null}; }),
     fin:null};
   save(); render();
@@ -754,12 +882,14 @@ function vSession(A){
   const total=a.entries.length, done=a.entries.filter(e=>entFb(e)).length;
   $("#sub").textContent=`${done}/${total} exercises`;
   let h="";
+  if(a.quick) h+=`<div class="card tight" style="border-color:var(--acc2)">
+    <div class="tiny" style="color:var(--acc2)"><b>QUICK SESSION</b> \u2014 three lifts and the wildcard, two sets each. Counts the same as a full one.</div></div>`;
   a.entries.forEach((ent,ei)=>{
     const x=EX[ent.x], rec=recommend(ent.x);
     const isDone=(ent.sets||[]).length>0 && ent.sets.every(v=>sF(v));
     h+=`<div class="ex ${isDone?"done":""}">
       <div class="row" style="align-items:flex-start">
-        <div style="flex:1"><div class="exn">${esc(x.n)}${x.arm?' <span class="tiny">each side</span>':""}</div>
+        <div style="flex:1"><div class="exn">${ent.wild?'<span class="wildtag">WILDCARD</span> ':""}${esc(x.n)}${x.arm?' <span class="tiny">each side</span>':""}</div>
         <div class="exm">${x.s} sets &middot; target ${ent.target}${x.t==="time"?" sec":" reps"}</div></div>
         ${isDone?'<span class="pill g">done</span>':""}
       </div>`;
@@ -967,7 +1097,7 @@ function vProg(A){
       return `<div style="flex:1;text-align:center;padding:13px 3px;border-radius:12px;
         background:${used?"#16210C":"var(--card2)"};border:1px solid ${used?"var(--acc)":"var(--line)"};
         color:${used?"var(--acc)":"var(--faint)"};font-weight:850">${b}</div>`}).join("")}</div>
-    <div class="tiny" style="margin-top:10px">The rack lights up to your heaviest bell so far. Working all the way to the 16 is the whole game.</div></div>`;
+    <div class="tiny" style="margin-top:10px">The rack lights up to your heaviest bell so far. Working all the way to the 20 is the whole game.</div></div>`;
 
   if(S.sessions.length){
     h+=`<div class="card"><div class="lbl">Recent sessions</div>`;
@@ -1080,7 +1210,7 @@ function vCoach(A){
 
   h+=`<div class="card"><div class="lbl">How the progression works</div>
     <div class="muted" style="font-size:13px;line-height:1.6">
-    Your bells jump 4 → 6 → 8 → 10 → 12 → 16 kg. From the 4 to the 6 is a 50% increase; the youth
+    Your bells jump 4 → 6 → 8 → 10 → 12 → 16 → 20 kg. From the 4 to the 6 is a 50% increase; the youth
     strength guidance is to add 5–10% at a time. You physically cannot do that with a fixed bell set,
     so <b>load is not the progression variable here — reps are.</b><br><br>
     He adds reps inside the range session by session. Only once he hits the top of the range on
@@ -1088,12 +1218,12 @@ function vCoach(A){
     him back to the bottom of the range. A "Too hard" rating walks the reps back rather than the weight.
     </div></div>`;
 
-  h+=`<div class="card"><div class="lbl">The 16 kg ceiling</div>
+  h+=`<div class="card"><div class="lbl">The 20 kg ceiling</div>
     <div class="muted" style="font-size:13px;line-height:1.6">
     At 175 cm he is tall for 13, and the starting bells have been set accordingly - the squat,
     hinge and carry all begin near the top of your rack.<br><br>
     That means <b>the leg and carry work will run out of weight long before the pressing does.</b>
-    Deadlifts and carries at 16 kg will stop being hard within a few weeks; the presses and curls
+    Deadlifts and carries at 20 kg will stop being hard eventually; the presses and curls
     will keep progressing for a year. When an exercise caps out, the app stops asking for more
     weight and starts telling him to add reps, and it names the harder variation to move to -
     single-leg deadlifts, split squats, single-arm swings. Same load, more demand.<br><br>
