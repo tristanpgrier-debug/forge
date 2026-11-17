@@ -250,6 +250,30 @@ const EX={
   pullover:{n:"Floor Pullover",t:"bell",s:3,lo:10,hi:12,b:2,rest:60,
     cue:"On your back, bell over your chest, reach it back over your head. Stop when your ribs want to flare."},
 
+  /* --- core pool: one of these lands in EVERY session, on top of the session's own
+         core lift (Hollow Hold / Suitcase Carry / Plank). Deliberately a mix of holds,
+         anti-rotation and anti-tilt work rather than eight flavours of sit-up: the job of
+         the middle is to stop the spine moving while the arms and legs do something, and
+         that is also what transfers to sport. --- */
+  sideplank:{n:"Side Plank",t:"time",s:3,lo:15,hi:40,rest:45,arm:true,core:true,
+    cue:"Elbow under your shoulder, body in one line from ear to ankle. Hips stacked - don't let the bottom one sag."},
+  birddog:{n:"Bird Dog",t:"body",s:3,lo:8,hi:12,rest:45,core:true,
+    cue:"Opposite arm and leg reach out long and slow. Imagine balancing a drink on your lower back - it shouldn't spill."},
+  hollowrock:{n:"Hollow Rock",t:"time",s:3,lo:15,hi:35,rest:45,core:true,
+    cue:"Hollow hold, then rock like a banana. The rock comes from your middle, not from throwing your legs."},
+  plankshoulder:{n:"Plank Shoulder Taps",t:"time",s:3,lo:20,hi:40,rest:45,core:true,
+    cue:"Plank with your feet a bit wide, tap the opposite shoulder. The whole job is stopping your hips swinging."},
+  legraise:{n:"Lying Leg Raise",t:"body",s:3,lo:8,hi:15,rest:45,core:true,
+    cue:"Hands under your bum, lower back pressed flat. Only lower the legs as far as you can without the back lifting."},
+  deadbugreach:{n:"Weighted Dead Bug",t:"bell",s:3,lo:8,hi:12,b:1,rest:45,core:true,
+    cue:"Bell held straight up over your chest, both hands. Lower the opposite arm and leg slowly. Back stays glued down."},
+  vup:{n:"V-Up",t:"body",s:3,lo:6,hi:12,rest:45,core:true,
+    cue:"Flat on your back, arms overhead. Reach hands to feet in one piece. If the back arches on the way down, tuck the knees instead."},
+  woodchop:{n:"Kettlebell Woodchop",t:"bell",s:3,lo:8,hi:12,b:2,rest:60,arm:true,core:true,
+    cue:"Both hands on the bell, low by one hip to high across the other side. Turn through the ribs, not the lower back."},
+  suitcasemarch:{n:"Suitcase March",t:"time",s:3,lo:20,hi:40,b:4,rest:60,arm:true,bell:true,core:true,
+    cue:"One bell, march on the spot, knee to hip height. Stand dead straight. The bell is trying to tip you - don't let it."},
+
   /* --- wildcard pool: one genuinely different movement each session --- */
   figure8:{n:"Figure 8",t:"time",s:3,lo:20,hi:40,b:2,rest:60,bell:true,wild:true,
     cue:"Stand wide, weave the bell through your legs in a figure 8. Keep your back flat and your head up."},
@@ -297,18 +321,27 @@ const SESS=[
   {k:"A",n:"Push Day",sub:"Chest, shoulders, core",
    ex:["goblet","floorpress","press","hollow"],
    swap:["pushup","inclinepush","closepress","seesaw"]},
-  {k:"B",n:"Pull Day",sub:"Back, arms, legs",
+  {k:"B",n:"Pull Day",sub:"Back, arms, legs, core",
    ex:["deadlift","row","curl","carry"],
    swap:["lunge","racksquat1","suitcasedl","pullover"]},
-  {k:"C",n:"Athlete Day",sub:"Power, full body",
+  {k:"C",n:"Athlete Day",sub:"Power, full body, core",
    ex:["swing","racked","row","plank"],
    swap:["floorpress","getup","closepress","gobletcurl"]}
 ];
 /* Wildcards rotate every single session, so there is always one thing he has not done
    for a while. Deliberately the showy, awkward, slightly silly ones. */
 const WILDCARDS=["figure8","aroundworld","bearcrawl","waiter","bottomsup","tksitup","suitcasedl","racksquat1"];
+/* Core slot, added 17 Nov 2026 because Orlando asked for more core work.
+   Ten of them and three session types: 10 and 3 share no factor, so each day type works
+   through all ten before any repeat, and the core move changes every single session.
+   Do NOT make this list a multiple of 3 - at nine, each day type only ever saw three of
+   them, which was the whole bug this comment exists to stop someone reintroducing.
+   Hollow Hold, Suitcase Carry and Plank stay where they are as each session's own core
+   lift - these are on TOP of that, so every session now has two core pieces, not one.   */
+const CORE=["sideplank","deadbug","birddog","hollowrock","plankshoulder","legraise","vup","woodchop","suitcasemarch","deadbugreach"];
 function swapFor(s,cyc){ return s.swap[Math.floor(cyc/3)%s.swap.length]; }
 function wildFor(cyc){ return WILDCARDS[cyc%WILDCARDS.length]; }
+function coreFor(cyc){ return CORE[cyc%CORE.length]; }
 
 /* ================= FINISHERS =================
    The point of these is that they are the bit he tells people about. Optional, bonus XP.      */
@@ -318,6 +351,9 @@ const FINISHERS=[
   {n:"The Complex",i:"🔗",d:"Pick one bell you can handle and DO NOT put it down: 5 deadlifts, 5 rows, 5 racked squats, 5 presses. 2-3 rounds, rest 90 s between.",xp:25},
   {n:"Farmer's Challenge",i:"🧱",d:"Heaviest bell you can hold with good posture. Walk until your grip says stop. Time it. That number is the target next time.",xp:20},
   {n:"Plank Wars",i:"🛡️",d:"One max plank. Beat your personal best by even one second and it counts.",xp:15},
+  {n:"The Plank Ladder",i:"🪜",d:"Plank 30 s, side plank left 20 s, side plank right 20 s, plank 30 s. Straight through, no rest. One round is plenty.",xp:20},
+  {n:"Hollow Hold Hunt",i:"🍌",d:"One hollow hold. The clock stops the second your lower back lifts off the floor - that is the honest number. Beat it next time.",xp:15},
+  {n:"Dead Bug Minute",i:"🐞",d:"60 seconds of dead bugs, as slow as you like. Count only the ones where your back stayed flat. That is the score.",xp:15},
   {n:"Dad vs Orlando",i:"⚔️",d:"Pick any one movement. Same bell, same reps, head to head. Loser racks the bells.",xp:25},
   {n:"Halo Flow",i:"🌀",d:"60 seconds of continuous halos, changing direction every 10. Light bell. Harder than it sounds.",xp:15}
 ];
@@ -342,6 +378,10 @@ const BADGES=[
   {k:"wild5",i:"✨",n:"5 Wildcards",f:S=>{
       const seen=new Set(); S.sessions.forEach(s=>s.entries.forEach(e=>{ if(WILDCARDS.includes(e.x)) seen.add(e.x) }));
       return seen.size>=5}},
+  {k:"core10",i:"🧱",n:"10 Core Sessions",f:S=>S.sessions.filter(s=>(s.entries||[]).some(e=>CORE.includes(e.x))).length>=10},
+  {k:"coreall",i:"🎯",n:"Every Core Move",f:S=>{
+      const seen=new Set(); S.sessions.forEach(s=>(s.entries||[]).forEach(e=>{ if(CORE.includes(e.x)) seen.add(e.x) }));
+      return seen.size>=CORE.length}},
   {k:"fin3",i:"🎲",n:"3 Finishers",f:S=>S.sessions.filter(s=>s.fin).length>=3},
   {k:"week3",i:"📅",n:"3 in a Week",f:S=>{
       const w={}; S.sessions.forEach(s=>{const d=new Date(s.date);
@@ -835,7 +875,7 @@ function vToday(A){
         const isW = k===wildFor(S.cycleIdx);
         return `<span class="pill ${isW?"p":r.locked?"a":""}">${isW?"✨ ":""}${EX[r.key].n}${r.locked?" 🔒":""}</span>`}).join("")}
     </div>
-    <div class="tiny" style="margin-top:9px">✨ Wildcard — changes every session.</div>
+    <div class="tiny" style="margin-top:9px">🧱 Core — a different one every session, on top of your usual core lift. ✨ Wildcard — changes every session.</div>
     <div style="height:15px"></div>
     <button class="btn" onclick="startSession(false)">Start ${esc(s.n)}</button>
     <div style="height:8px"></div>
@@ -858,8 +898,13 @@ function vToday(A){
    a session does not happen at all, and a short session beats a skipped one every time. */
 function sessionPlan(cyc, quick){
   const s=SESS[cyc%3];
-  const core = quick ? s.ex.slice(0,3) : s.ex.slice();
-  const keys = core.concat(quick?[]:[swapFor(s,cyc)]).concat([wildFor(cyc)]);
+  const lifts = quick ? s.ex.slice(0,3) : s.ex.slice();
+  // The core slot survives Quick mode on purpose. A short session is exactly the session
+  // where the core work would otherwise be the first thing dropped.
+  const keys = lifts
+    .concat(quick?[]:[swapFor(s,cyc)])
+    .concat([coreFor(cyc)])
+    .concat([wildFor(cyc)]);
   return {s, keys};
 }
 function startSession(quick){
