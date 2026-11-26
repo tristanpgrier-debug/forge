@@ -157,6 +157,15 @@ nav svg{width:23px;height:23px;display:block;margin:0 auto 3px;stroke:currentCol
 .toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);background:var(--acc);color:#0A1000;
   padding:12px 20px;border-radius:99px;font-weight:800;font-size:14px;z-index:200;animation:pop .25s}
 @keyframes pop{from{opacity:0;transform:translate(-50%,14px)}}
+.ssh{margin:21px 0 9px;padding:11px 14px;border-left:3px solid var(--acc2);background:#0D1A1E;border-radius:0 12px 12px 0}
+.sshn{font-size:10.5px;font-weight:900;letter-spacing:1.1px;color:var(--acc2)}
+.sshx{font-size:14.5px;font-weight:800;margin-top:4px;line-height:1.35}
+.ssht{font-size:11.5px;color:var(--dim);margin-top:5px;line-height:1.45}
+.ex.pA{border-bottom-left-radius:0;border-bottom-right-radius:0;margin-bottom:0;border-bottom:0}
+.ex.pB{border-top-left-radius:0;border-top-right-radius:0;margin-top:0;border-top:1px dashed var(--line)}
+.ppair{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:7px}
+.pnum{flex:none;width:19px;height:19px;border-radius:99px;background:var(--acc2);color:#04212A;font-size:10.5px;font-weight:900;display:grid;place-items:center}
+.pamp{color:var(--acc2);font-weight:900;font-size:12px}
 .rest{position:fixed;bottom:calc(78px + env(safe-area-inset-bottom));left:0;right:0;background:var(--acc2);
   color:#00212A;padding:11px 18px;display:flex;justify-content:space-between;align-items:center;
   font-weight:800;z-index:45}
@@ -870,16 +879,18 @@ function vToday(A){
     <div class="lbl">Next up</div>
     <div style="font-size:25px;font-weight:850;letter-spacing:-.6px">${s.n}</div>
     <div class="muted" style="font-size:13.5px;margin-top:3px">${s.sub}</div>
-    <div style="margin-top:13px;display:flex;flex-wrap:wrap;gap:6px">
-      ${sessionPlan(S.cycleIdx,false).keys.map(k=>{const r=resolve(k);
-        const isW = k===wildFor(S.cycleIdx);
-        return `<span class="pill ${isW?"p":r.locked?"a":""}">${isW?"✨ ":""}${EX[r.key].n}${r.locked?" 🔒":""}</span>`}).join("")}
+    <div style="margin-top:14px">
+      ${sessionPairs(S.cycleIdx,false).map((pr,i)=>`<div class="ppair">
+        <span class="pnum">${i+1}</span>
+        ${pr.map(k=>{const r=resolve(k); const isW=(i===2&&k===pr[1]);
+          return `<span class="pill ${isW?"p":r.locked?"a":""}">${isW?"✨ ":""}${EX[r.key].n}${r.locked?" 🔒":""}</span>`}).join('<span class="pamp">⇄</span>')}
+      </div>`).join("")}
     </div>
-    <div class="tiny" style="margin-top:9px">🧱 Core — a different one every session, on top of your usual core lift. ✨ Wildcard — changes every session.</div>
+    <div class="tiny" style="margin-top:10px">Three supersets. Go straight from the first exercise into the second, then rest. That is what makes it shorter <i>and</i> harder — you spend less of it standing around.</div>
     <div style="height:15px"></div>
-    <button class="btn" onclick="startSession(false)">Start ${esc(s.n)}</button>
+    <button class="btn" onclick="startSession(false)">Start ${esc(s.n)} · about ${planMins(S.cycleIdx,false)} min</button>
     <div style="height:8px"></div>
-    <button class="btn sec" onclick="startSession(true)">Quick version · about 20 min</button>
+    <button class="btn sec" onclick="startSession(true)">Short on time · about ${planMins(S.cycleIdx,true)} min</button>
   </div>`;
 
   const locked=Object.keys(SKILLS).filter(k=>!S.unlocked[k]);
@@ -896,28 +907,89 @@ function vToday(A){
 /* Quick = the first three core lifts plus the wildcard, two sets each. About 20 minutes.
    It exists because "I can't be bothered with a whole session" is the most common reason
    a session does not happen at all, and a short session beats a skipped one every time. */
+/* ===================== SUPERSETS (v8, 26 Nov 2026) =====================
+   Orlando was running out of time. Fair enough: v6 took the session from 4 exercises to 6
+   and v7 took it to 7, which is a 75% longer session in a fortnight. That was my doing.
+
+   The session is now SIX slots in THREE pairs. A pair is a loaded lift and a partner that
+   uses something else entirely - core, or a wildcard. You go straight from one to the other
+   and rest after both.
+
+   Why pairs rather than just cutting the work: the time in a session is mostly standing
+   still. Seven exercises at three sets with 75 s rest is about 26 minutes of waiting. Pairing
+   fills that waiting with the core work he asked for last week, so wall-clock drops by
+   roughly a third while the loaded muscles actually get MORE recovery between their sets
+   (lift, partner, rest ~= 105 s, against 75 s before).
+
+   That is the only honest way to make a 13-year-old's session "more intense": raise the
+   density, never the effort per set. Cutting rest and chasing failure is the usual adult
+   answer and it is exactly what the NSCA guidance says not to do here. The one rule has not
+   moved: stop a set when the reps stop looking good.
+
+   Pair 1: big lift  + rotating core move
+   Pair 2: 2nd lift  + the session's own core lift (Hollow Hold / Suitcase Carry / Plank)
+   Pair 3: 3rd lift  + wildcard
+   The swap pool now SUBSTITUTES for the third lift every other block instead of being an
+   extra slot. Making it additive is what grew the session in v6.                          */
+/* What each movement actually is, so a superset never pairs two of the same pattern.
+   Pairing a press with a press, or a squat with a squat, means the second one is done on a
+   tired muscle and its quality drops - which is the one thing this program will not trade. */
+const PAT={
+  goblet:"squat", racked:"squat", racksquat1:"squat", lunge:"squat",
+  deadlift:"hinge", fastdl:"hinge", swing:"hinge", suitcasedl:"hinge", clean:"hinge",
+  floorpress:"press", press:"press", pushup:"press", inclinepush:"press", closepress:"press",
+  seesaw:"press", tkpress:"press", bottomsup:"press", getup:"press", waiter:"press",
+  row:"pull", pullover:"pull",
+  curl:"curl", gobletcurl:"curl"
+};
+function pat(k){ return PAT[resolve(k).key] || "core"; }
+function useSwap(cyc){ return Math.floor(cyc/3)%2===1; }
+/* If the session's wildcard happens to be the same pattern as the lift it would be paired
+   with, take the next one along instead. Everything in the pool still comes round. */
+function wildPairedWith(cyc, lift){
+  for(let i=0;i<WILDCARDS.length;i++){
+    const k=WILDCARDS[(cyc+i)%WILDCARDS.length];
+    if(pat(k)!==pat(lift) || pat(k)==="core") return k;
+  }
+  return wildFor(cyc);
+}
+function sessionPairs(cyc, quick){
+  const s=SESS[cyc%3];
+  const third = useSwap(cyc) ? swapFor(s,cyc) : s.ex[2];
+  const pairs=[[s.ex[0], coreFor(cyc)], [s.ex[1], s.ex[3]], [third, wildPairedWith(cyc, third)]];
+  return quick ? pairs.slice(0,2) : pairs;
+}
 function sessionPlan(cyc, quick){
   const s=SESS[cyc%3];
-  const lifts = quick ? s.ex.slice(0,3) : s.ex.slice();
-  // The core slot survives Quick mode on purpose. A short session is exactly the session
-  // where the core work would otherwise be the first thing dropped.
-  const keys = lifts
-    .concat(quick?[]:[swapFor(s,cyc)])
-    .concat([coreFor(cyc)])
-    .concat([wildFor(cyc)]);
-  return {s, keys};
+  const pairs=sessionPairs(cyc, !!quick);
+  return {s, pairs, keys: pairs.flat()};
+}
+/* Rough wall clock, so he can see what he is committing to before he starts. */
+function planMins(cyc, quick){
+  const pairs=sessionPairs(cyc,!!quick);
+  let sec=0;
+  pairs.forEach(pr=>{
+    const rounds = quick ? 2 : Math.max(...pr.map(k=>EX[resolve(k).key].s));
+    const work = pr.reduce((n,k)=>{ const x=EX[resolve(k).key];
+      return n + (x.t==="time" ? (x.lo+x.hi)/2 : ((x.lo+x.hi)/2)*(x.arm?2:1)*3.5) + 12; },0);
+    sec += rounds*(work + Math.max(...pr.map(k=>EX[resolve(k).key].rest)));
+  });
+  return Math.round((sec+240)/60);   // + warm-up and getting the bells out
 }
 function startSession(quick){
-  const cyc=S.cycleIdx, {s,keys}=sessionPlan(cyc, !!quick);
-  const wild=wildFor(cyc);
-  S.active={k:s.k,n:s.n,date:today(),quick:!!quick,wild,
-    entries:keys.map(k=>{ const r=resolve(k);
-      const rec=recommend(r.key);
-      const nSets = quick ? Math.min(2,EX[r.key].s) : EX[r.key].s;
-      return {x:r.key, lockedFrom:r.locked?r.orig:null, bell:rec.bell, target:rec.reps,
-              wild:(k===wild), sets:Array.from({length:nSets},()=>({r:null,b:rec.bell??null,f:null,n:null})),
-              fb:null}; }),
-    fin:null};
+  const cyc=S.cycleIdx, {s,pairs}=sessionPlan(cyc, !!quick);
+  const wild=(pairs[2]||[])[1] || wildFor(cyc);
+  const entries=[];
+  pairs.forEach((pr,pi)=>{
+    // Both halves of a pair run the same number of rounds, or the pair stops making sense.
+    const rounds = quick ? 2 : Math.max(...pr.map(k=>EX[resolve(k).key].s));
+    pr.forEach((k,po)=>{ const r=resolve(k); const rec=recommend(r.key);
+      entries.push({x:r.key, lockedFrom:r.locked?r.orig:null, bell:rec.bell, target:rec.reps,
+        wild:(k===wild), p:pi, po,
+        sets:Array.from({length:rounds},()=>({r:null,b:rec.bell??null,f:null,n:null})),
+        fb:null}); });
+  });
+  S.active={k:s.k,n:s.n,date:today(),quick:!!quick,wild,pairs:pairs.length,entries,fin:null};
   save(); render();
 }
 
@@ -928,11 +1000,24 @@ function vSession(A){
   $("#sub").textContent=`${done}/${total} exercises`;
   let h="";
   if(a.quick) h+=`<div class="card tight" style="border-color:var(--acc2)">
-    <div class="tiny" style="color:var(--acc2)"><b>QUICK SESSION</b> \u2014 three lifts and the wildcard, two sets each. Counts the same as a full one.</div></div>`;
+    <div class="tiny" style="color:var(--acc2)"><b>QUICK SESSION</b> \u2014 two supersets, two rounds each. Counts exactly the same as a full one.</div></div>`;
+  h+=`<div class="card tight" style="border-color:#2A2416;background:#15120A">
+    <div class="tiny" style="color:#E8C98A"><b>Want it harder without going heavier?</b> Take three full seconds to lower the bell on every rep.
+    Same bell, same reps, a lot more work \u2014 and the slow half is where the strength actually gets built.
+    That is the lever to pull. Not more weight, and not grinding out extra reps.</div></div>`;
+  const nPairs=a.pairs||0;
   a.entries.forEach((ent,ei)=>{
     const x=EX[ent.x], rec=recommend(ent.x);
+    if(nPairs && ent.po===0){
+      const mate=a.entries[ei+1];
+      h+=`<div class="ssh">
+        <div class="sshn">SUPERSET ${ent.p+1} OF ${nPairs}</div>
+        <div class="sshx">${esc(x.n)} &nbsp;\u21c4&nbsp; ${mate?esc(EX[mate.x].n):""}</div>
+        <div class="ssht">Straight from one into the other, no rest in between. Rest only after you have done both, then go again.</div>
+      </div>`;
+    }
     const isDone=(ent.sets||[]).length>0 && ent.sets.every(v=>sF(v));
-    h+=`<div class="ex ${isDone?"done":""}">
+    h+=`<div class="ex ${isDone?"done":""}${nPairs?(ent.po===0?" pA":" pB"):""}">
       <div class="row" style="align-items:flex-start">
         <div style="flex:1"><div class="exn">${ent.wild?'<span class="wildtag">WILDCARD</span> ':""}${esc(x.n)}${x.arm?' <span class="tiny">each side</span>':""}</div>
         <div class="exm">${x.s} sets &middot; target ${ent.target}${x.t==="time"?" sec":" reps"}</div></div>
